@@ -1,6 +1,8 @@
 # Zoom Connector
 
-Open source Midpoint connector for Zoom <https://zoom.us>
+Open source Identity Management connector for [Zoom](https://zoom.us)
+
+Developed and tested in [Midpoint](https://evolveum.com/midpoint/), but also could be utilized in any [ConnId](https://connid.tirasa.net/) framework. 
 
 ## Introductory Notes
 
@@ -36,6 +38,11 @@ Information on the JWT authentication method with Zoom is available at
 
 Once this is all done, you can manage Users and Groups in Zoom's web UI by going to
 <https://zoom.us/meeting> and using the Admin -> User Management links.
+
+## Midpoint configuration
+
+See XML files in src/test/resources folder for Midpoint examples.  resourceOverlay.xml is an example
+resource configuration setup for Midpoint.
 
 ## Configuration properties 
 

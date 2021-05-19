@@ -19,6 +19,7 @@ import com.exclamationlabs.connid.base.zoom.model.response.ListGroupsResponse;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 import java.util.List;
+import java.util.Map;
 
 public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGroup> {
 
@@ -26,7 +27,7 @@ public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGrou
     public String create(ZoomDriver zoomDriver, ZoomGroup groupModel) throws ConnectorException {
 
         ZoomGroup newGroup = zoomDriver.executePostRequest("/groups",
-                ZoomGroup.class, groupModel);
+                ZoomGroup.class, groupModel).getResponseObject();
 
         if (newGroup == null || newGroup.getId() == null) {
             throw new ConnectorException("Response from group creation was invalid");
@@ -52,14 +53,16 @@ public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGrou
     }
 
     @Override
-    public List<ZoomGroup> getAll(ZoomDriver zoomDriver) throws ConnectorException {
-        ListGroupsResponse response = zoomDriver.executeGetRequest("/groups", ListGroupsResponse.class);
+    public List<ZoomGroup> getAll(ZoomDriver zoomDriver, Map<String, Object> dataMap) throws ConnectorException {
+        ListGroupsResponse response = zoomDriver.executeGetRequest(
+                "/groups", ListGroupsResponse.class).getResponseObject();
         return response.getGroups();
     }
 
     @Override
-    public ZoomGroup getOne(ZoomDriver zoomDriver, String groupId) throws ConnectorException {
-        return zoomDriver.executeGetRequest("/groups/" + groupId, ZoomGroup.class);
+    public ZoomGroup getOne(ZoomDriver zoomDriver, String groupId, Map<String, Object> dataMap) throws ConnectorException {
+        return zoomDriver.executeGetRequest(
+                "/groups/" + groupId, ZoomGroup.class).getResponseObject();
     }
 
 }

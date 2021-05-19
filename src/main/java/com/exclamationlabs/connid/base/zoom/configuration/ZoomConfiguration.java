@@ -36,6 +36,6 @@ public class ZoomConfiguration extends BaseConnectorConfiguration {
             helpMessageKey = "File path for the Zoom Configuration File",
             required = true)
     public String getConfigurationFilePath() {
-        return getMidPointConfigurationFilePath();
+        return innerGetMidPointConfigurationFilePath();
     }
 }

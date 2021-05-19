@@ -25,7 +25,9 @@ import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser> {
 
@@ -38,7 +40,7 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
                 UserCreationRequest(UserCreationType.CREATE.getZoomName(), zoomUser);
 
         ZoomUser newUser = zoomDriver.executePostRequest("/users",
-                ZoomUser.class, requestData);
+                ZoomUser.class, requestData).getResponseObject();
 
         if (newUser == null) {
             throw new ConnectorException("Response from user creation was invalid");
@@ -67,20 +69,22 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
     }
 
     @Override
-    public List<ZoomUser> getAll(ZoomDriver zoomDriver) throws ConnectorException {
-        ListUsersResponse response = zoomDriver.executeGetRequest("/users", ListUsersResponse.class);
+    public List<ZoomUser> getAll(ZoomDriver zoomDriver, Map<String, Object> dataMap) throws ConnectorException {
+        ListUsersResponse response = zoomDriver.executeGetRequest(
+                "/users", ListUsersResponse.class).getResponseObject();
         return response.getUsers();
     }
 
     @Override
-    public ZoomUser getOne(ZoomDriver zoomDriver, String userId) throws ConnectorException {
-        return zoomDriver.executeGetRequest("/users/" + userId, ZoomUser.class);
+    public ZoomUser getOne(ZoomDriver zoomDriver, String userId, Map<String, Object> dataMap) throws ConnectorException {
+        return zoomDriver.executeGetRequest(
+                "/users/" + userId, ZoomUser.class).getResponseObject();
     }
 
     private void updateGroupAssignments(ZoomDriver driver, String userId, List<String> updatedGroupIds, boolean userUpdate) {
         List<String> currentGroupIds = new ArrayList<>();
         if (userUpdate) {
-            ZoomUser temp = getOne(driver, userId);
+            ZoomUser temp = getOne(driver, userId, Collections.emptyMap());
             currentGroupIds = temp.getGroupIds();
         }
 
@@ -108,7 +112,8 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
         GroupMembersRequest membersRequest = new GroupMembersRequest(memberList);
 
         GroupMembersResponse response = driver.executePostRequest(
-                "/groups/" + groupId + "/members", GroupMembersResponse.class, membersRequest);
+                "/groups/" + groupId + "/members",
+                GroupMembersResponse.class, membersRequest).getResponseObject();
         if (response == null || response.getAddedAt() == null) {
             throw new ConnectorException("Unexpected response received while adding user to group");
         }

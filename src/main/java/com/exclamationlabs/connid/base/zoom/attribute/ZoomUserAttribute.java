@@ -16,8 +16,6 @@
 
 package com.exclamationlabs.connid.base.zoom.attribute;
 
-import org.identityconnectors.framework.common.objects.AttributeInfo;
-
 public enum ZoomUserAttribute {
     USER_ID,
     FIRST_NAME,
@@ -33,5 +31,5 @@ public enum ZoomUserAttribute {
     LAST_LOGIN_TIME,
     VERIFIED,
     PERSONAL_MEETING_ID,
-    GROUP_IDS;
+    GROUP_IDS
 }

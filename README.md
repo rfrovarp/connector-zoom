@@ -50,12 +50,12 @@ resource configuration setup for Midpoint.
 
 - See src/test/resources/__bcon__development__exclamation_labs__zoom.properties for an example
 
-- CONNECTOR_BASE_CONFIGURATION_ACTIVE - Set this flag to Y to enable these configuration properties.  If this
-flag is set to N, integration tests will be ignored, and the connector configuration will not be able to be used
-in MidPoint.
+- service.serviceUrl - Normally set to `https://api.zoom.us/v2`
 
-- CONNECTOR_BASE_AUTH_JWT_ISSUER - Use the API key saved from the 'Getting started' instructions.
+- security.authenticator.jwtHs256.issuer - Use the API key saved from the 'Getting started' instructions.
 
-- CONNECTOR_BASE_AUTH_JWT_SECRET - Use the API secret saved from the 'Getting started' instructions.
+- security.authenticator.jwtHs256.secret - Use the API secret saved from the 'Getting started' instructions.
 
-- CONNECTOR_BASE_AUTH_JWT_EXPIRATION_PERIOD - Expiration period in milliseconds of JWT token.
+- security.authenticator.jwtHs256.expirationPeriod - Expiration period in milliseconds of JWT token.
+
+- results.pagination - This should be set to `true` to support Zoom pagination for getting all users.

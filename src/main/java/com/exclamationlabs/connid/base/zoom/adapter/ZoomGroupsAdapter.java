@@ -16,20 +16,20 @@ package com.exclamationlabs.connid.base.zoom.adapter;
 import com.exclamationlabs.connid.base.connector.adapter.AdapterValueTypeConverter;
 import com.exclamationlabs.connid.base.connector.adapter.BaseAdapter;
 import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttribute;
+import com.exclamationlabs.connid.base.zoom.configuration.ZoomConfiguration;
 import com.exclamationlabs.connid.base.zoom.model.ZoomGroup;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeDataType.*;
 import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.NOT_UPDATEABLE;
 import static com.exclamationlabs.connid.base.zoom.attribute.ZoomGroupAttribute.*;
 
-public class ZoomGroupsAdapter extends BaseAdapter<ZoomGroup> {
+public class ZoomGroupsAdapter extends BaseAdapter<ZoomGroup, ZoomConfiguration> {
 
     @Override
     public ObjectClass getType() {
@@ -42,8 +42,8 @@ public class ZoomGroupsAdapter extends BaseAdapter<ZoomGroup> {
     }
 
     @Override
-    public List<ConnectorAttribute> getConnectorAttributes() {
-        List<ConnectorAttribute> result = new ArrayList<>();
+    public Set<ConnectorAttribute> getConnectorAttributes() {
+        Set<ConnectorAttribute> result = new HashSet<>();
         result.add(new ConnectorAttribute(GROUP_ID.name(), STRING, NOT_UPDATEABLE));
         result.add(new ConnectorAttribute(GROUP_NAME.name(), STRING, NOT_UPDATEABLE));
         result.add(new ConnectorAttribute(TOTAL_MEMBERS.name(), INTEGER, NOT_UPDATEABLE));
@@ -51,7 +51,10 @@ public class ZoomGroupsAdapter extends BaseAdapter<ZoomGroup> {
     }
 
     @Override
-    protected ZoomGroup constructModel(Set<Attribute> attributes, boolean creation) {
+    protected ZoomGroup constructModel(Set<Attribute> attributes,
+                                       Set<Attribute> multiValueAdded,
+                                       Set<Attribute> multiValueRemoved,
+                                       boolean creation) {
         ZoomGroup group = new ZoomGroup();
         group.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));
         group.setName(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, GROUP_NAME));
@@ -60,8 +63,8 @@ public class ZoomGroupsAdapter extends BaseAdapter<ZoomGroup> {
     }
 
     @Override
-    protected List<Attribute> constructAttributes(ZoomGroup group) {
-        List<Attribute> attributes = new ArrayList<>();
+    protected Set<Attribute> constructAttributes(ZoomGroup group) {
+        Set<Attribute> attributes = new HashSet<>();
 
         attributes.add(AttributeBuilder.build(GROUP_ID.name(), group.getId()));
         attributes.add(AttributeBuilder.build(GROUP_NAME.name(), group.getName()));

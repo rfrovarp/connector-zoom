@@ -16,11 +16,11 @@ package com.exclamationlabs.connid.base.zoom.adapter;
 import com.exclamationlabs.connid.base.connector.adapter.AdapterValueTypeConverter;
 import com.exclamationlabs.connid.base.connector.adapter.BaseAdapter;
 import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttribute;
+import com.exclamationlabs.connid.base.zoom.configuration.ZoomConfiguration;
 import com.exclamationlabs.connid.base.zoom.model.ZoomUser;
 import org.identityconnectors.framework.common.objects.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeDataType.*;
@@ -28,7 +28,7 @@ import static org.identityconnectors.framework.common.objects.AttributeInfo.Flag
 import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.NOT_UPDATEABLE;
 import static com.exclamationlabs.connid.base.zoom.attribute.ZoomUserAttribute.*;
 
-public class ZoomUsersAdapter extends BaseAdapter<ZoomUser> {
+public class ZoomUsersAdapter extends BaseAdapter<ZoomUser, ZoomConfiguration> {
 
     @Override
     public ObjectClass getType() {
@@ -41,8 +41,8 @@ public class ZoomUsersAdapter extends BaseAdapter<ZoomUser> {
     }
 
     @Override
-    public List<ConnectorAttribute> getConnectorAttributes() {
-        List<ConnectorAttribute> result = new ArrayList<>();
+    public Set<ConnectorAttribute> getConnectorAttributes() {
+        Set<ConnectorAttribute> result = new HashSet<>();
         result.add(new ConnectorAttribute(USER_ID.name(), STRING, NOT_UPDATEABLE));
         result.add(new ConnectorAttribute(FIRST_NAME.name(), STRING));
         result.add(new ConnectorAttribute(LAST_NAME.name(), STRING));
@@ -65,7 +65,10 @@ public class ZoomUsersAdapter extends BaseAdapter<ZoomUser> {
     }
 
     @Override
-    protected ZoomUser constructModel(Set<Attribute> attributes, boolean creation) {
+    protected ZoomUser constructModel(Set<Attribute> attributes,
+                                      Set<Attribute> multiValueAdded,
+                                      Set<Attribute> multiValueRemoved,
+                                      boolean creation) {
         ZoomUser user = new ZoomUser();
         user.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));
         user.setFirstName(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, FIRST_NAME));
@@ -89,8 +92,8 @@ public class ZoomUsersAdapter extends BaseAdapter<ZoomUser> {
     }
 
     @Override
-    protected List<Attribute> constructAttributes(ZoomUser user) {
-        List<Attribute> attributes = new ArrayList<>();
+    protected Set<Attribute> constructAttributes(ZoomUser user) {
+        Set<Attribute> attributes = new HashSet<>();
 
         attributes.add(AttributeBuilder.build(USER_ID.name(), user.getId()));
         attributes.add(AttributeBuilder.build(EMAIL.name(), user.getEmail()));

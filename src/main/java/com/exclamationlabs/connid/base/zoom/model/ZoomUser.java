@@ -19,7 +19,7 @@ package com.exclamationlabs.connid.base.zoom.model;
 import com.exclamationlabs.connid.base.connector.model.IdentityModel;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
+import java.util.Set;
 
 public class ZoomUser implements IdentityModel {
 
@@ -58,7 +58,7 @@ public class ZoomUser implements IdentityModel {
     private Integer type;
 
     @SerializedName("group_ids")
-    private List<String> groupIds;
+    private Set<String> groupIds;
 
     public String getId() {
         return id;
@@ -172,11 +172,11 @@ public class ZoomUser implements IdentityModel {
         this.type = type;
     }
 
-    public List<String> getGroupIds() {
+    public Set<String> getGroupIds() {
         return groupIds;
     }
 
-    public void setGroupIds(List<String> groupIds) {
+    public void setGroupIds(Set<String> groupIds) {
         this.groupIds = groupIds;
     }
 

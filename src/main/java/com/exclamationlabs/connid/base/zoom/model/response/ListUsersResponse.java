@@ -18,17 +18,17 @@ package com.exclamationlabs.connid.base.zoom.model.response;
 
 import com.exclamationlabs.connid.base.zoom.model.ZoomUser;
 
-import java.util.List;
+import java.util.Set;
 
 public class ListUsersResponse {
 
-    private List<ZoomUser> users;
+    private Set<ZoomUser> users;
 
-    public List<ZoomUser> getUsers() {
+    public Set<ZoomUser> getUsers() {
         return users;
     }
 
-    public void setUsers(List<ZoomUser> users) {
+    public void setUsers(Set<ZoomUser> users) {
         this.users = users;
     }
 }

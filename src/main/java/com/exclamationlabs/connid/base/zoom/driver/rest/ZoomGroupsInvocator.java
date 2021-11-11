@@ -14,12 +14,15 @@
 package com.exclamationlabs.connid.base.zoom.driver.rest;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
+import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.zoom.model.ZoomGroup;
 import com.exclamationlabs.connid.base.zoom.model.response.ListGroupsResponse;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGroup> {
 
@@ -53,9 +56,17 @@ public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGrou
     }
 
     @Override
-    public List<ZoomGroup> getAll(ZoomDriver zoomDriver, Map<String, Object> dataMap) throws ConnectorException {
+    public Set<ZoomGroup> getAll(ZoomDriver zoomDriver, ResultsFilter filter,
+                                 ResultsPaginator paginator, Integer forceNum) throws ConnectorException {
+        String additionalQueryString = "";
+        if (paginator.hasPagination()) {
+            additionalQueryString = "?page_size=" +
+                    paginator.getPageSize() + "&page_number=" +
+                    paginator.getCurrentPageNumber();
+
+        }
         ListGroupsResponse response = zoomDriver.executeGetRequest(
-                "/groups", ListGroupsResponse.class).getResponseObject();
+                "/groups" + additionalQueryString, ListGroupsResponse.class).getResponseObject();
         return response.getGroups();
     }
 

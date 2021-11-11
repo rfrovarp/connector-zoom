@@ -14,6 +14,8 @@
 package com.exclamationlabs.connid.base.zoom.driver.rest;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
+import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.zoom.model.GroupMember;
 import com.exclamationlabs.connid.base.zoom.model.ZoomUser;
 import com.exclamationlabs.connid.base.zoom.model.UserCreationType;
@@ -24,10 +26,7 @@ import com.exclamationlabs.connid.base.zoom.model.response.ListUsersResponse;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser> {
 
@@ -69,9 +68,18 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
     }
 
     @Override
-    public List<ZoomUser> getAll(ZoomDriver zoomDriver, Map<String, Object> dataMap) throws ConnectorException {
+    public Set<ZoomUser> getAll(ZoomDriver zoomDriver, ResultsFilter filter, ResultsPaginator paginator,
+                                Integer forceNumber) throws ConnectorException {
+        String additionalQueryString = "";
+        if (paginator.hasPagination()) {
+            additionalQueryString = "?page_size=" +
+                    paginator.getPageSize() + "&page_number=" +
+                    paginator.getCurrentPageNumber();
+
+        }
+
         ListUsersResponse response = zoomDriver.executeGetRequest(
-                "/users", ListUsersResponse.class).getResponseObject();
+                "/users" + additionalQueryString, ListUsersResponse.class).getResponseObject();
         return response.getUsers();
     }
 
@@ -81,8 +89,8 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
                 "/users/" + userId, ZoomUser.class).getResponseObject();
     }
 
-    private void updateGroupAssignments(ZoomDriver driver, String userId, List<String> updatedGroupIds, boolean userUpdate) {
-        List<String> currentGroupIds = new ArrayList<>();
+    private void updateGroupAssignments(ZoomDriver driver, String userId, Set<String> updatedGroupIds, boolean userUpdate) {
+        Set<String> currentGroupIds = new HashSet<>();
         if (userUpdate) {
             ZoomUser temp = getOne(driver, userId, Collections.emptyMap());
             currentGroupIds = temp.getGroupIds();

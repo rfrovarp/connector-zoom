@@ -1,0 +1,12 @@
+---
+name: 'Zoom'
+configurationClass:
+  name: 'ZoomConfiguration'
+  package: 'com.exclamationlabs.connid.base.zoom.configuration'
+rest: true # io-error-retries
+service: true # service-url
+results: true
+security:
+  authenticator:
+    jwtHs256: true
+

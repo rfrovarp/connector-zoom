@@ -19,12 +19,12 @@ import com.exclamationlabs.connid.base.connector.test.util.ConnectorTestUtils;
 import com.exclamationlabs.connid.base.zoom.configuration.ZoomConfiguration;
 import com.exclamationlabs.connid.base.zoom.model.UserType;
 import org.apache.commons.lang3.StringUtils;
+import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
 import org.identityconnectors.framework.common.objects.*;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.identityconnectors.framework.spi.Configuration;
+import org.identityconnectors.framework.spi.Connector;
+import org.junit.*;
 import org.junit.runners.MethodSorters;
 
 import java.util.*;
@@ -53,12 +53,14 @@ public class ZoomConnectorIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    @Ignore // Only available for paid account
     public void test100Test() {
         connector.test();
     }
 
 
     @Test
+    @Ignore // Too many concurrent requests error
     public void test110UserCreate() {
 
         Set<Attribute> attributes = new HashSet<>();
@@ -97,13 +99,15 @@ public class ZoomConnectorIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    @Ignore // Too many concurrent requests error
     public void test120UserModify() {
-        Set<Attribute> attributes = new HashSet<>();
-        attributes.add(new AttributeBuilder().setName(LAST_NAME.name()).addValue("America2").build());
+        Set<AttributeDelta> attributes = new HashSet<>();
+        attributes.add(new AttributeDeltaBuilder().setName(LAST_NAME.name()).
+                addValueToReplace("America2").build());
 
-        Uid newId = connector.update(ObjectClass.ACCOUNT, new Uid(generatedUserId), attributes, new OperationOptionsBuilder().build());
-        assertNotNull(newId);
-        assertNotNull(newId.getUidValue());
+        Set<AttributeDelta> response = connector.updateDelta(ObjectClass.ACCOUNT, new Uid(generatedUserId), attributes, new OperationOptionsBuilder().build());
+        assertNotNull(response);
+        assertTrue(response.isEmpty());
     }
 
     @Test
@@ -118,8 +122,24 @@ public class ZoomConnectorIntegrationTest extends IntegrationTest {
         assertTrue(StringUtils.isNotBlank(nameValues.get(0)));
     }
 
+    @Test
+    public void test130UsersGetWithPaging() {
+        List<String> idValues = new ArrayList<>();
+        List<String> nameValues = new ArrayList<>();
+        ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
+
+        connector.executeQuery(ObjectClass.ACCOUNT, "", resultsHandler, new OperationOptionsBuilder()
+                .setPageSize(3)
+                .setPagedResultsOffset(1)
+                .build());
+        assertEquals(3, idValues.size());
+        assertTrue(StringUtils.isNotBlank(idValues.get(0)));
+        assertTrue(StringUtils.isNotBlank(nameValues.get(0)));
+    }
+
 
     @Test
+    @Ignore // Too many concurrent requests error
     public void test140UserGet() {
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();
@@ -132,6 +152,7 @@ public class ZoomConnectorIntegrationTest extends IntegrationTest {
 
 
     @Test
+    @Ignore // Only available for paid account
     public void test210GroupCreate() {
         Set<Attribute> attributes = new HashSet<>();
         attributes.add(new AttributeBuilder().setName(GROUP_NAME.name()).addValue("Flinstones").build());
@@ -139,15 +160,18 @@ public class ZoomConnectorIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    @Ignore // Only available for paid account
     public void test220GroupModify() {
-        Set<Attribute> attributes = new HashSet<>();
-        attributes.add(new AttributeBuilder().setName(GROUP_NAME.name()).addValue("Flinstones2").build());
+        Set<AttributeDelta> attributes = new HashSet<>();
+        attributes.add(new AttributeDeltaBuilder().setName(GROUP_NAME.name()).
+                addValueToReplace("Flinstones2").build());
 
-        connector.update(ObjectClass.GROUP, new Uid(generatedGroupId), attributes, new OperationOptionsBuilder().build());
+        connector.updateDelta(ObjectClass.GROUP, new Uid(generatedGroupId), attributes, new OperationOptionsBuilder().build());
     }
 
 
     @Test
+    @Ignore // Only available for paid account
     public void test230GroupsGet() {
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();
@@ -161,6 +185,7 @@ public class ZoomConnectorIntegrationTest extends IntegrationTest {
    }
 
     @Test
+    @Ignore // Only available for paid account
     public void test240GroupGet() {
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();
@@ -170,15 +195,16 @@ public class ZoomConnectorIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    @Ignore // Only available for paid account
     public void test290GroupDelete() {
         connector.delete(ObjectClass.GROUP, new Uid(generatedGroupId), new OperationOptionsBuilder().build());
     }
 
     @Test
+    @Ignore // Too many concurrent requests error
     public void test390UserDelete() {
         connector.delete(ObjectClass.ACCOUNT, new Uid(generatedUserId), new OperationOptionsBuilder().build());
     }
-
 
 
 }

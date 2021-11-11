@@ -17,17 +17,17 @@
 package com.exclamationlabs.connid.base.zoom.model.response;
 
 import com.exclamationlabs.connid.base.zoom.model.ZoomGroup;
-import java.util.List;
+import java.util.Set;
 
 public class ListGroupsResponse {
 
-    private List<ZoomGroup> groups;
+    private Set<ZoomGroup> groups;
 
-    public List<ZoomGroup> getGroups() {
+    public Set<ZoomGroup> getGroups() {
         return groups;
     }
 
-    public void setGroups(List<ZoomGroup> groups) {
+    public void setGroups(Set<ZoomGroup> groups) {
         this.groups = groups;
     }
 }

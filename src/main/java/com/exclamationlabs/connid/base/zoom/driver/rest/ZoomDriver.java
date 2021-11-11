@@ -1,15 +1,13 @@
 package com.exclamationlabs.connid.base.zoom.driver.rest;
 
-import com.exclamationlabs.connid.base.connector.configuration.ConnectorProperty;
 import com.exclamationlabs.connid.base.connector.driver.rest.BaseRestDriver;
 import com.exclamationlabs.connid.base.connector.driver.rest.RestFaultProcessor;
+import com.exclamationlabs.connid.base.zoom.configuration.ZoomConfiguration;
 import com.exclamationlabs.connid.base.zoom.model.ZoomGroup;
 import com.exclamationlabs.connid.base.zoom.model.ZoomUser;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
-import java.util.Set;
-
-public class ZoomDriver extends BaseRestDriver {
+public class ZoomDriver extends BaseRestDriver<ZoomConfiguration> {
 
     public ZoomDriver() {
         super();
@@ -29,12 +27,7 @@ public class ZoomDriver extends BaseRestDriver {
 
     @Override
     protected String getBaseServiceUrl() {
-        return "https://api.zoom.us/v2";
-    }
-
-    @Override
-    public Set<ConnectorProperty> getRequiredPropertyNames() {
-        return null;
+        return getConfiguration().getServiceUrl();
     }
 
     @Override

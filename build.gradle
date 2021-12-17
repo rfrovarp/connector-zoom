@@ -12,6 +12,9 @@ buildscript {
 
 plugins {
     id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'com.jfrog.artifactory' version "${artifactory_publish_version}"
 }
 
 repositories {
@@ -33,6 +36,9 @@ apply plugin: 'com.exclamationlabs.connid.base.config.plugin'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
+
+def build_version = System.getenv('BUILD_NUMBER') == null ? 'SNAPSHOT' : System.getenv('BUILD_NUMBER')
+project.version="${project_version}-${build_version}"
 
 def versionNumber = "${project_version}"
 
@@ -76,9 +82,14 @@ task baseClean(type: Delete) {
     delete 'generatedConfig'
 }
 
-jar {
-    duplicatesStrategy DuplicatesStrategy.EXCLUDE
-    archiveName("${project.name}-${versionNumber}-connector.jar")
+
+def fatClassifierName = 'fat'
+def thinClassifierName = 'thin'
+
+task fatJar(type: Jar) {
+
+    archiveClassifier = fatClassifierName
+    archiveName("${project.name}-${project.version}-${fatClassifierName}.jar")
     from 'custom', 'build/classes/java/main', 'src/main/resources'
 
     manifest {
@@ -88,7 +99,52 @@ jar {
     }
 }
 
+task thinJar(type: Jar) {
+
+    archiveClassifier = thinClassifierName
+    archiveName("${project.name}-${project.version}-${thinClassifierName}.jar")
+    from 'build/classes/java/main'
+
+}
+
+thinJar.dependsOn('compileJava')
+
+fatJar.dependsOn('compileJava', 'copyDependencyJars')
 compileJava.dependsOn('generateConfiguration')
 
 clean.dependsOn('baseClean')
-jar.dependsOn('copyDependencyJars')
+
+
+publishing {
+    publications {
+        connector_fat(MavenPublication) {
+            artifact fatJar
+        }
+
+        connector_thin(MavenPublication) {
+            artifact thinJar
+        }
+    }
+}
+
+artifactoryPublish {
+    publications(publishing.publications.connector_fat, publishing.publications.connector_thin)
+}
+
+artifactory {
+    contextUrl = 'https://artifactory.exclamationlabs.com/artifactory'
+    publish {
+        repository {
+            repoKey = System.getenv('ARTIFACTORY_GRADLE_REPO')
+            username = System.getenv('ARTIFACTORY_GRADLE_USER')
+            password = System.getenv('ARTIFACTORY_GRADLE_PASS')
+        }
+        defaults {
+            publications('connector_fat', 'connector_thin')
+            publishArtifacts = true
+
+            publishPom = true // Publish generated POM files to Artifactory (true by default)
+            publishIvy = false // Publish generated Ivy descriptor files to Artifactory (true by default)
+        }
+    }
+}

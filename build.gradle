@@ -40,6 +40,8 @@ targetCompatibility = '1.8'
 def build_version = System.getenv('BUILD_NUMBER') == null ? 'SNAPSHOT' : System.getenv('BUILD_NUMBER')
 project.version="${project_version}-${build_version}"
 
+group = 'com.exclamationlabs.connid'
+
 def versionNumber = "${project_version}"
 
 dependencies {

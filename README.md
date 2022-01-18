@@ -56,6 +56,14 @@ resource configuration setup for Midpoint.
 
 - security.authenticator.jwtHs256.secret - Use the API secret saved from the 'Getting started' instructions.
 
-- security.authenticator.jwtHs256.expirationPeriod - Expiration period in milliseconds of JWT token.
+- security.authenticator.jwtHs256.expirationPeriod - Expiration period in milliseconds of JWT token.  For development testing, I had set this to 30000 (30 seconds).  It should be a relatively short period of time that this token is alive, since it is just a step to get to actual access token.
 
-- results.pagination - This should be set to `true` to support Zoom pagination for getting all users.
+- results.pagination (optional) - This should be set to `true` to support Zoom pagination for getting all users.
+
+- results.deepGet (optional) - Not needed for Zoom, should be false.
+
+- results.deepImport (optional) - Not needed for Zoom, should be false.
+
+- results.importBatchSize (optional) - Not needed for Zoom, should be false.
+
+- rest.ioErrorRetries (optional, default is 5) - the number of times an API invocation will be retried before giving up.

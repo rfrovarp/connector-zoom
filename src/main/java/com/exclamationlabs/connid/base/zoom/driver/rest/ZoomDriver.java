@@ -2,6 +2,8 @@ package com.exclamationlabs.connid.base.zoom.driver.rest;
 
 import com.exclamationlabs.connid.base.connector.driver.rest.BaseRestDriver;
 import com.exclamationlabs.connid.base.connector.driver.rest.RestFaultProcessor;
+import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
+import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.zoom.configuration.ZoomConfiguration;
 import com.exclamationlabs.connid.base.zoom.model.ZoomGroup;
 import com.exclamationlabs.connid.base.zoom.model.ZoomUser;
@@ -33,9 +35,11 @@ public class ZoomDriver extends BaseRestDriver<ZoomConfiguration> {
     @Override
     public void test() throws ConnectorException {
         try {
-            executeGetRequest("/accounts/me/settings", null);
+            ResultsPaginator paginator = new ResultsPaginator();
+            paginator.setPageSize(3);
+            getInvocator(ZoomUser.class).getAll(this, new ResultsFilter(), paginator, null);
         } catch (Exception e) {
-            throw new ConnectorException("Self-identification for Zoom connection user failed.", e);
+            throw new ConnectorException("Test for Zoom connection user failed.", e);
         }
     }
 

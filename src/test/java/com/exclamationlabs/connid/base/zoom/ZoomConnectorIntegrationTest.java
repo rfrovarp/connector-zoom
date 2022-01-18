@@ -19,11 +19,8 @@ import com.exclamationlabs.connid.base.connector.test.util.ConnectorTestUtils;
 import com.exclamationlabs.connid.base.zoom.configuration.ZoomConfiguration;
 import com.exclamationlabs.connid.base.zoom.model.UserType;
 import org.apache.commons.lang3.StringUtils;
-import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
 import org.identityconnectors.framework.common.objects.*;
-import org.identityconnectors.framework.spi.Configuration;
-import org.identityconnectors.framework.spi.Connector;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
@@ -53,7 +50,6 @@ public class ZoomConnectorIntegrationTest extends IntegrationTest {
     }
 
     @Test
-    @Ignore // Only available for paid account
     public void test100Test() {
         connector.test();
     }

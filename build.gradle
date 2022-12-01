@@ -15,7 +15,6 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'com.google.cloud.artifactregistry.gradle-plugin' version '2.2.0'
-    //id 'com.jfrog.artifactory' version "${artifactory_publish_version}"
 }
 
 repositories {
@@ -119,13 +118,6 @@ publishing {
             artifact fatJar
             artifact thinJar
         }
-
-        /*
-        connector_thin(MavenPublication) {
-            artifact thinJar
-        }
-
-         */
     }
     repositories {
         maven {
@@ -133,55 +125,5 @@ publishing {
         }
     }
 }
-/*
-model {
-    tasks.generatePomFileForConnector_thinPublication {
-        destination = file("$buildDir/thin-pom.xml")
-    }
-}
-*/
-tasks.withType(GenerateMavenPom).configureEach {
-    print 'echo task name: ' + it.name + '\n'
-    if (it.name.equals('generatePomFileForConnector_thinPublication')) {
-        print 'modifying task name: ' + it.name + '\n'
-        it.destination = file("$buildDir/thin-pom.xml")
-    }
-}
 
 
-/*
-tasks.withType(GenerateMavenPom).configureEach {
-    print 'echo task name: ' + it.name + '\n'
-    if (it.name.equals('publishConnector_thinPublicationToMavenRepository')) {
-        print 'disabling task name: ' + it.name + '\n'
-        it.enabled = false
-    }
-}
-
- */
-
-
-/*
-artifactoryPublish {
-    publications(publishing.publications.connector_fat, publishing.publications.connector_thin)
-}
-
-artifactory {
-    contextUrl = 'https://artifactory.exclamationlabs.com/artifactory'
-    publish {
-        repository {
-            repoKey = System.getenv('ARTIFACTORY_GRADLE_REPO')
-            username = System.getenv('ARTIFACTORY_GRADLE_USER')
-            password = System.getenv('ARTIFACTORY_GRADLE_PASS')
-        }
-        defaults {
-            publications('connector_fat', 'connector_thin')
-            publishArtifacts = true
-
-            publishPom = true // Publish generated POM files to Artifactory (true by default)
-            publishIvy = false // Publish generated Ivy descriptor files to Artifactory (true by default)
-        }
-    }
-}
-
- */

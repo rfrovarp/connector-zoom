@@ -1,16 +1,12 @@
 buildscript {
     ext {}
-    repositories {
-        maven {
-            url "https://artifactory.exclamationlabs.com/artifactory/libs-release-local"
-            credentials {
-                username = System.getenv('ARTIFACTORY_GRADLE_USER')
-                password = System.getenv('ARTIFACTORY_GRADLE_PASS')
-            }
-        }
-    }
     dependencies {
         classpath(group: 'com.exclamationlabs.connid', name: 'connector-base-config-plugin', version: "${config_plugin_version}-+")
+    }
+    repositories {
+        maven {
+            url "https://us-east1-maven.pkg.dev/provision-general-operations/provision-public"
+        }
     }
 }
 
@@ -18,25 +14,17 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
-    id 'com.jfrog.artifactory' version "${artifactory_publish_version}"
+    id 'com.google.cloud.artifactregistry.gradle-plugin' version '2.2.0'
+    //id 'com.jfrog.artifactory' version "${artifactory_publish_version}"
 }
 
 repositories {
     mavenCentral()
-    flatDir {
-        dirs 'localTemp'
-    }
-
-    maven {
-        url "https://artifactory.exclamationlabs.com/artifactory/libs-release-local"
-        credentials {
-            username = System.getenv('ARTIFACTORY_GRADLE_USER')
-            password = System.getenv('ARTIFACTORY_GRADLE_PASS')
-            }
-    }
-
     maven {
         url "https://nexus.evolveum.com/nexus/content/repositories/releases/"
+    }
+    maven {
+        url "https://us-east1-maven.pkg.dev/provision-general-operations/provision-public"
     }
 }
 
@@ -45,7 +33,7 @@ apply plugin: 'com.exclamationlabs.connid.base.config.plugin'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-def build_version = System.getenv('BUILD_NUMBER') == null ? 'SNAPSHOT' : System.getenv('BUILD_NUMBER')
+def build_version = System.getenv('BUILD_NUMBER') == null ? "${local_build_version}" : System.getenv('BUILD_NUMBER')
 project.version="${project_version}-${build_version}"
 
 group = 'com.exclamationlabs.connid'
@@ -64,7 +52,7 @@ dependencies {
 
     implementation "com.exclamationlabs.connid:connector-base:${base_connector_version}-+"
 
-    testImplementation "com.exclamationlabs.connid:connector-base-test-support:${base_connector_version}-+"
+    testImplementation "com.exclamationlabs.connid:connector-base-test-support:${test_connector_version}-+"
 
     testImplementation 'net.tirasa.connid:connector-framework-internal:1.5.0.0'
 }
@@ -127,16 +115,53 @@ clean.dependsOn('baseClean')
 
 publishing {
     publications {
-        connector_fat(MavenPublication) {
+        connector_impl(MavenPublication) {
             artifact fatJar
+            artifact thinJar
         }
 
+        /*
         connector_thin(MavenPublication) {
             artifact thinJar
         }
+
+         */
+    }
+    repositories {
+        maven {
+            url "artifactregistry://us-east1-maven.pkg.dev/provision-general-operations/provision-public/"
+        }
+    }
+}
+/*
+model {
+    tasks.generatePomFileForConnector_thinPublication {
+        destination = file("$buildDir/thin-pom.xml")
+    }
+}
+*/
+tasks.withType(GenerateMavenPom).configureEach {
+    print 'echo task name: ' + it.name + '\n'
+    if (it.name.equals('generatePomFileForConnector_thinPublication')) {
+        print 'modifying task name: ' + it.name + '\n'
+        it.destination = file("$buildDir/thin-pom.xml")
     }
 }
 
+
+/*
+tasks.withType(GenerateMavenPom).configureEach {
+    print 'echo task name: ' + it.name + '\n'
+    if (it.name.equals('publishConnector_thinPublicationToMavenRepository')) {
+        print 'disabling task name: ' + it.name + '\n'
+        it.enabled = false
+    }
+}
+
+ */
+
+
+/*
 artifactoryPublish {
     publications(publishing.publications.connector_fat, publishing.publications.connector_thin)
 }
@@ -158,3 +183,5 @@ artifactory {
         }
     }
 }
+
+ */

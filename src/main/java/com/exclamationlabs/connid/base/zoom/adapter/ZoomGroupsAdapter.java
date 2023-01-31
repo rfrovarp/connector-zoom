@@ -13,63 +13,66 @@
 
 package com.exclamationlabs.connid.base.zoom.adapter;
 
+import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeDataType.*;
+import static com.exclamationlabs.connid.base.zoom.attribute.ZoomGroupAttribute.*;
+import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.NOT_UPDATEABLE;
+
 import com.exclamationlabs.connid.base.connector.adapter.AdapterValueTypeConverter;
 import com.exclamationlabs.connid.base.connector.adapter.BaseAdapter;
 import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttribute;
 import com.exclamationlabs.connid.base.zoom.configuration.ZoomConfiguration;
 import com.exclamationlabs.connid.base.zoom.model.ZoomGroup;
+import java.util.HashSet;
+import java.util.Set;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeDataType.*;
-import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.NOT_UPDATEABLE;
-import static com.exclamationlabs.connid.base.zoom.attribute.ZoomGroupAttribute.*;
-
 public class ZoomGroupsAdapter extends BaseAdapter<ZoomGroup, ZoomConfiguration> {
 
-    @Override
-    public ObjectClass getType() {
-        return ObjectClass.GROUP;
-    }
+  @Override
+  public ObjectClass getType() {
+    return ObjectClass.GROUP;
+  }
 
-    @Override
-    public Class<ZoomGroup> getIdentityModelClass() {
-        return ZoomGroup.class;
-    }
+  @Override
+  public Class<ZoomGroup> getIdentityModelClass() {
+    return ZoomGroup.class;
+  }
 
-    @Override
-    public Set<ConnectorAttribute> getConnectorAttributes() {
-        Set<ConnectorAttribute> result = new HashSet<>();
-        result.add(new ConnectorAttribute(GROUP_ID.name(), STRING, NOT_UPDATEABLE));
-        result.add(new ConnectorAttribute(GROUP_NAME.name(), STRING, NOT_UPDATEABLE));
-        result.add(new ConnectorAttribute(TOTAL_MEMBERS.name(), INTEGER, NOT_UPDATEABLE));
-        return result;
-    }
+  @Override
+  public Set<ConnectorAttribute> getConnectorAttributes() {
+    Set<ConnectorAttribute> result = new HashSet<>();
+    result.add(new ConnectorAttribute(GROUP_ID.name(), STRING, NOT_UPDATEABLE));
+    result.add(new ConnectorAttribute(GROUP_NAME.name(), STRING, NOT_UPDATEABLE));
+    result.add(new ConnectorAttribute(TOTAL_MEMBERS.name(), INTEGER, NOT_UPDATEABLE));
+    return result;
+  }
 
-    @Override
-    protected ZoomGroup constructModel(Set<Attribute> attributes,
-                                       Set<Attribute> multiValueAdded,
-                                       Set<Attribute> multiValueRemoved,
-                                       boolean creation) {
-        ZoomGroup group = new ZoomGroup();
-        group.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));
-        group.setName(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, GROUP_NAME));
-        group.setTotalMembers(AdapterValueTypeConverter.getSingleAttributeValue(Integer.class, attributes, TOTAL_MEMBERS));
-        return group;
-    }
+  @Override
+  protected ZoomGroup constructModel(
+      Set<Attribute> attributes,
+      Set<Attribute> multiValueAdded,
+      Set<Attribute> multiValueRemoved,
+      boolean creation) {
+    ZoomGroup group = new ZoomGroup();
+    group.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));
+    group.setName(
+        AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, GROUP_NAME));
+    group.setTotalMembers(
+        AdapterValueTypeConverter.getSingleAttributeValue(
+            Integer.class, attributes, TOTAL_MEMBERS));
+    return group;
+  }
 
-    @Override
-    protected Set<Attribute> constructAttributes(ZoomGroup group) {
-        Set<Attribute> attributes = new HashSet<>();
+  @Override
+  protected Set<Attribute> constructAttributes(ZoomGroup group) {
+    Set<Attribute> attributes = new HashSet<>();
 
-        attributes.add(AttributeBuilder.build(GROUP_ID.name(), group.getId()));
-        attributes.add(AttributeBuilder.build(GROUP_NAME.name(), group.getName()));
-        attributes.add(AttributeBuilder.build(TOTAL_MEMBERS.name(), group.getTotalMembers()));
+    attributes.add(AttributeBuilder.build(GROUP_ID.name(), group.getId()));
+    attributes.add(AttributeBuilder.build(GROUP_NAME.name(), group.getName()));
+    attributes.add(AttributeBuilder.build(TOTAL_MEMBERS.name(), group.getTotalMembers()));
 
-        return attributes;
-    }
+    return attributes;
+  }
 }

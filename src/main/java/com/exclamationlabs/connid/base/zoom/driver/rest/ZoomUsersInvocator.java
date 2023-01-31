@@ -17,114 +17,119 @@ import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
 import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
 import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.zoom.model.GroupMember;
-import com.exclamationlabs.connid.base.zoom.model.ZoomUser;
 import com.exclamationlabs.connid.base.zoom.model.UserCreationType;
+import com.exclamationlabs.connid.base.zoom.model.ZoomUser;
 import com.exclamationlabs.connid.base.zoom.model.request.GroupMembersRequest;
 import com.exclamationlabs.connid.base.zoom.model.request.UserCreationRequest;
 import com.exclamationlabs.connid.base.zoom.model.response.GroupMembersResponse;
 import com.exclamationlabs.connid.base.zoom.model.response.ListUsersResponse;
+import java.util.*;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
-import java.util.*;
-
 public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser> {
 
-    private static final Log LOG = Log.getLog(ZoomUsersInvocator.class);
+  private static final Log LOG = Log.getLog(ZoomUsersInvocator.class);
 
-    @Override
-    public String create(ZoomDriver zoomDriver, ZoomUser zoomUser) throws ConnectorException {
+  @Override
+  public String create(ZoomDriver zoomDriver, ZoomUser zoomUser) throws ConnectorException {
 
-        UserCreationRequest requestData = new
-                UserCreationRequest(UserCreationType.CREATE.getZoomName(), zoomUser);
+    UserCreationRequest requestData =
+        new UserCreationRequest(UserCreationType.CREATE.getZoomName(), zoomUser);
 
-        ZoomUser newUser = zoomDriver.executePostRequest("/users",
-                ZoomUser.class, requestData).getResponseObject();
+    ZoomUser newUser =
+        zoomDriver.executePostRequest("/users", ZoomUser.class, requestData).getResponseObject();
 
-        if (newUser == null) {
-            throw new ConnectorException("Response from user creation was invalid");
-        }
-
-        if (zoomUser.getGroupIds() != null && !zoomUser.getGroupIds().isEmpty()) {
-            updateGroupAssignments(zoomDriver, newUser.getId(), zoomUser.getGroupIds(), false);
-        }
-
-        return newUser.getId();
+    if (newUser == null) {
+      throw new ConnectorException("Response from user creation was invalid");
     }
 
-    @Override
-    public void update(ZoomDriver zoomDriver, String userId, ZoomUser userModel) throws ConnectorException {
-
-        zoomDriver.executePatchRequest("/users/" + userModel.getId(), null, userModel);
-
-        if (userModel.getGroupIds() != null) {
-            updateGroupAssignments(zoomDriver, userModel.getId(), userModel.getGroupIds(), true);
-        }
+    if (zoomUser.getGroupIds() != null && !zoomUser.getGroupIds().isEmpty()) {
+      updateGroupAssignments(zoomDriver, newUser.getId(), zoomUser.getGroupIds(), false);
     }
 
-    @Override
-    public void delete(ZoomDriver zoomDriver, String userId) throws ConnectorException {
-        zoomDriver.executeDeleteRequest("/users/" + userId, null);
+    return newUser.getId();
+  }
+
+  @Override
+  public void update(ZoomDriver zoomDriver, String userId, ZoomUser userModel)
+      throws ConnectorException {
+
+    zoomDriver.executePatchRequest("/users/" + userModel.getId(), null, userModel);
+
+    if (userModel.getGroupIds() != null) {
+      updateGroupAssignments(zoomDriver, userModel.getId(), userModel.getGroupIds(), true);
+    }
+  }
+
+  @Override
+  public void delete(ZoomDriver zoomDriver, String userId) throws ConnectorException {
+    zoomDriver.executeDeleteRequest("/users/" + userId, null);
+  }
+
+  @Override
+  public Set<ZoomUser> getAll(
+      ZoomDriver zoomDriver, ResultsFilter filter, ResultsPaginator paginator, Integer forceNumber)
+      throws ConnectorException {
+    String additionalQueryString = "";
+    if (paginator.hasPagination()) {
+      additionalQueryString =
+          "?page_size="
+              + paginator.getPageSize()
+              + "&page_number="
+              + paginator.getCurrentPageNumber();
     }
 
-    @Override
-    public Set<ZoomUser> getAll(ZoomDriver zoomDriver, ResultsFilter filter, ResultsPaginator paginator,
-                                Integer forceNumber) throws ConnectorException {
-        String additionalQueryString = "";
-        if (paginator.hasPagination()) {
-            additionalQueryString = "?page_size=" +
-                    paginator.getPageSize() + "&page_number=" +
-                    paginator.getCurrentPageNumber();
+    ListUsersResponse response =
+        zoomDriver
+            .executeGetRequest("/users" + additionalQueryString, ListUsersResponse.class)
+            .getResponseObject();
+    return response.getUsers();
+  }
 
-        }
+  @Override
+  public ZoomUser getOne(ZoomDriver zoomDriver, String userId, Map<String, Object> dataMap)
+      throws ConnectorException {
+    return zoomDriver.executeGetRequest("/users/" + userId, ZoomUser.class).getResponseObject();
+  }
 
-        ListUsersResponse response = zoomDriver.executeGetRequest(
-                "/users" + additionalQueryString, ListUsersResponse.class).getResponseObject();
-        return response.getUsers();
+  private void updateGroupAssignments(
+      ZoomDriver driver, String userId, Set<String> updatedGroupIds, boolean userUpdate) {
+    Set<String> currentGroupIds = new HashSet<>();
+    if (userUpdate) {
+      ZoomUser temp = getOne(driver, userId, Collections.emptyMap());
+      currentGroupIds = temp.getGroupIds();
     }
 
-    @Override
-    public ZoomUser getOne(ZoomDriver zoomDriver, String userId, Map<String, Object> dataMap) throws ConnectorException {
-        return zoomDriver.executeGetRequest(
-                "/users/" + userId, ZoomUser.class).getResponseObject();
+    for (String groupId : currentGroupIds) {
+      if (!updatedGroupIds.contains(groupId)) {
+        // group was removed
+        driver.executeDeleteRequest("/groups/" + groupId + "/members/" + userId, null);
+        LOG.info("Successfully removed group id {0} from user id {1}", groupId, userId);
+      }
     }
 
-    private void updateGroupAssignments(ZoomDriver driver, String userId, Set<String> updatedGroupIds, boolean userUpdate) {
-        Set<String> currentGroupIds = new HashSet<>();
-        if (userUpdate) {
-            ZoomUser temp = getOne(driver, userId, Collections.emptyMap());
-            currentGroupIds = temp.getGroupIds();
-        }
-
-        for (String groupId : currentGroupIds) {
-            if (! updatedGroupIds.contains(groupId)) {
-                // group was removed
-                driver.executeDeleteRequest("/groups/" + groupId + "/members/" + userId, null);
-                LOG.info("Successfully removed group id {0} from user id {1}", groupId, userId);
-            }
-        }
-
-        for (String groupId : updatedGroupIds) {
-            if (! currentGroupIds.contains(groupId)) {
-                // new group was added
-                addGroupToUser(driver, groupId, userId);
-                LOG.info("Successfully added group id {0} to user id {1}", groupId, userId);
-            }
-        }
-
+    for (String groupId : updatedGroupIds) {
+      if (!currentGroupIds.contains(groupId)) {
+        // new group was added
+        addGroupToUser(driver, groupId, userId);
+        LOG.info("Successfully added group id {0} to user id {1}", groupId, userId);
+      }
     }
+  }
 
-    private void addGroupToUser(ZoomDriver driver, String groupId, String userId) {
-        List<GroupMember> memberList = new ArrayList<>();
-        memberList.add(new GroupMember(userId));
-        GroupMembersRequest membersRequest = new GroupMembersRequest(memberList);
+  private void addGroupToUser(ZoomDriver driver, String groupId, String userId) {
+    List<GroupMember> memberList = new ArrayList<>();
+    memberList.add(new GroupMember(userId));
+    GroupMembersRequest membersRequest = new GroupMembersRequest(memberList);
 
-        GroupMembersResponse response = driver.executePostRequest(
-                "/groups/" + groupId + "/members",
-                GroupMembersResponse.class, membersRequest).getResponseObject();
-        if (response == null || response.getAddedAt() == null) {
-            throw new ConnectorException("Unexpected response received while adding user to group");
-        }
+    GroupMembersResponse response =
+        driver
+            .executePostRequest(
+                "/groups/" + groupId + "/members", GroupMembersResponse.class, membersRequest)
+            .getResponseObject();
+    if (response == null || response.getAddedAt() == null) {
+      throw new ConnectorException("Unexpected response received while adding user to group");
     }
-
+  }
 }

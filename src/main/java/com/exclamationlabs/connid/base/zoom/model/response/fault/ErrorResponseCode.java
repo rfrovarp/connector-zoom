@@ -17,11 +17,11 @@
 package com.exclamationlabs.connid.base.zoom.model.response.fault;
 
 public interface ErrorResponseCode {
-    int VALIDATION_FAILED = 300;
+  int VALIDATION_FAILED = 300;
 
-    int USER_NOT_FOUND = 1001;
-    int USER_ALREADY_EXISTS = 1005;
+  int USER_NOT_FOUND = 1001;
+  int USER_ALREADY_EXISTS = 1005;
 
-    int GROUP_NOT_FOUND = 4130;
-    int GROUP_NAME_ALREADY_EXISTS = 4132;
+  int GROUP_NOT_FOUND = 4130;
+  int GROUP_NAME_ALREADY_EXISTS = 4132;
 }

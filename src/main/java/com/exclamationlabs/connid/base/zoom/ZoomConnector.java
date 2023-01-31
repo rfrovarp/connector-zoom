@@ -19,21 +19,21 @@ package com.exclamationlabs.connid.base.zoom;
 import com.exclamationlabs.connid.base.connector.BaseFullAccessConnector;
 import com.exclamationlabs.connid.base.connector.authenticator.Authenticator;
 import com.exclamationlabs.connid.base.connector.authenticator.JWTHS256Authenticator;
-
 import com.exclamationlabs.connid.base.zoom.adapter.ZoomGroupsAdapter;
 import com.exclamationlabs.connid.base.zoom.adapter.ZoomUsersAdapter;
 import com.exclamationlabs.connid.base.zoom.configuration.ZoomConfiguration;
 import com.exclamationlabs.connid.base.zoom.driver.rest.ZoomDriver;
 import org.identityconnectors.framework.spi.ConnectorClass;
 
-@ConnectorClass(displayNameKey = "zoom.connector.display", configurationClass = ZoomConfiguration.class)
+@ConnectorClass(
+    displayNameKey = "zoom.connector.display",
+    configurationClass = ZoomConfiguration.class)
 public class ZoomConnector extends BaseFullAccessConnector<ZoomConfiguration> {
 
-    public ZoomConnector() {
-        super(ZoomConfiguration.class);
-        setAuthenticator((Authenticator) new JWTHS256Authenticator());
-        setDriver(new ZoomDriver());
-        setAdapters(new ZoomUsersAdapter(), new ZoomGroupsAdapter());
-
-    }
+  public ZoomConnector() {
+    super(ZoomConfiguration.class);
+    setAuthenticator((Authenticator) new JWTHS256Authenticator());
+    setDriver(new ZoomDriver());
+    setAdapters(new ZoomUsersAdapter(), new ZoomGroupsAdapter());
+  }
 }

@@ -21,21 +21,21 @@ import com.google.gson.annotations.SerializedName;
 
 public final class UserCreationRequest {
 
-    private final String action;
+  private final String action;
 
-    @SerializedName("user_info")
-    private final ZoomUser user;
+  @SerializedName("user_info")
+  private final ZoomUser user;
 
-    public UserCreationRequest(String actionInput, ZoomUser userInput) {
-        action = actionInput;
-        user = userInput;
-    }
+  public UserCreationRequest(String actionInput, ZoomUser userInput) {
+    action = actionInput;
+    user = userInput;
+  }
 
-    public String getAction() {
-        return action;
-    }
+  public String getAction() {
+    return action;
+  }
 
-    public ZoomUser getUser() {
-        return user;
-    }
+  public ZoomUser getUser() {
+    return user;
+  }
 }

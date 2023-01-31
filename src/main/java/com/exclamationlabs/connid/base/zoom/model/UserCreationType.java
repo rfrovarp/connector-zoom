@@ -17,19 +17,18 @@
 package com.exclamationlabs.connid.base.zoom.model;
 
 public enum UserCreationType {
+  CREATE("create"),
+  AUTO_CREATE("autoCreate"),
+  CUSTOM_CREATE("custCreate"),
+  SSO_CREATE("ssoCreate");
 
-    CREATE("create"),
-    AUTO_CREATE("autoCreate"),
-    CUSTOM_CREATE("custCreate"),
-    SSO_CREATE("ssoCreate");
+  private String zoomName;
 
-    private String zoomName;
+  UserCreationType(String name) {
+    zoomName = name;
+  }
 
-    UserCreationType(String name) {
-        zoomName = name;
-    }
-
-    public String getZoomName() {
-        return zoomName;
-    }
+  public String getZoomName() {
+    return zoomName;
+  }
 }

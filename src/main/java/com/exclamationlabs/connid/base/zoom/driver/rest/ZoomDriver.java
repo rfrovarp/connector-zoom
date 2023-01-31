@@ -11,40 +11,38 @@ import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 public class ZoomDriver extends BaseRestDriver<ZoomConfiguration> {
 
-    public ZoomDriver() {
-        super();
-        addInvocator(ZoomUser.class, new ZoomUsersInvocator());
-        addInvocator(ZoomGroup.class, new ZoomGroupsInvocator());
-    }
+  public ZoomDriver() {
+    super();
+    addInvocator(ZoomUser.class, new ZoomUsersInvocator());
+    addInvocator(ZoomGroup.class, new ZoomGroupsInvocator());
+  }
 
-    @Override
-    protected boolean usesBearerAuthorization() {
-        return true;
-    }
+  @Override
+  protected boolean usesBearerAuthorization() {
+    return true;
+  }
 
-    @Override
-    protected RestFaultProcessor getFaultProcessor() {
-        return ZoomFaultProcessor.getInstance();
-    }
+  @Override
+  protected RestFaultProcessor getFaultProcessor() {
+    return ZoomFaultProcessor.getInstance();
+  }
 
-    @Override
-    protected String getBaseServiceUrl() {
-        return getConfiguration().getServiceUrl();
-    }
+  @Override
+  protected String getBaseServiceUrl() {
+    return getConfiguration().getServiceUrl();
+  }
 
-    @Override
-    public void test() throws ConnectorException {
-        try {
-            ResultsPaginator paginator = new ResultsPaginator();
-            paginator.setPageSize(3);
-            getInvocator(ZoomUser.class).getAll(this, new ResultsFilter(), paginator, null);
-        } catch (Exception e) {
-            throw new ConnectorException("Test for Zoom connection user failed.", e);
-        }
+  @Override
+  public void test() throws ConnectorException {
+    try {
+      ResultsPaginator paginator = new ResultsPaginator();
+      paginator.setPageSize(3);
+      getInvocator(ZoomUser.class).getAll(this, new ResultsFilter(), paginator, null);
+    } catch (Exception e) {
+      throw new ConnectorException("Test for Zoom connection user failed.", e);
     }
+  }
 
-    @Override
-    public void close() {
-
-    }
+  @Override
+  public void close() {}
 }

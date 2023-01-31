@@ -18,62 +18,64 @@ import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
 import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.zoom.model.ZoomGroup;
 import com.exclamationlabs.connid.base.zoom.model.response.ListGroupsResponse;
-import org.identityconnectors.framework.common.exceptions.ConnectorException;
-
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGroup> {
 
-    @Override
-    public String create(ZoomDriver zoomDriver, ZoomGroup groupModel) throws ConnectorException {
+  @Override
+  public String create(ZoomDriver zoomDriver, ZoomGroup groupModel) throws ConnectorException {
 
-        ZoomGroup newGroup = zoomDriver.executePostRequest("/groups",
-                ZoomGroup.class, groupModel).getResponseObject();
+    ZoomGroup newGroup =
+        zoomDriver.executePostRequest("/groups", ZoomGroup.class, groupModel).getResponseObject();
 
-        if (newGroup == null || newGroup.getId() == null) {
-            throw new ConnectorException("Response from group creation was invalid");
-        }
-
-        return newGroup.getId();
+    if (newGroup == null || newGroup.getId() == null) {
+      throw new ConnectorException("Response from group creation was invalid");
     }
 
-    @Override
-    public void update(ZoomDriver zoomDriver, String groupId, ZoomGroup groupModel) throws ConnectorException {
+    return newGroup.getId();
+  }
 
-        ZoomGroup modifyGroup = new ZoomGroup();
-        // Cannot send key in update JSON, and name is the only field to update,
-        // so create a new object w/ just the name set
-        modifyGroup.setName(groupModel.getName());
+  @Override
+  public void update(ZoomDriver zoomDriver, String groupId, ZoomGroup groupModel)
+      throws ConnectorException {
 
-        zoomDriver.executePatchRequest("/groups/" + groupModel.getId(), null, groupModel);
+    ZoomGroup modifyGroup = new ZoomGroup();
+    // Cannot send key in update JSON, and name is the only field to update,
+    // so create a new object w/ just the name set
+    modifyGroup.setName(groupModel.getName());
+
+    zoomDriver.executePatchRequest("/groups/" + groupModel.getId(), null, groupModel);
+  }
+
+  @Override
+  public void delete(ZoomDriver zoomDriver, String groupId) throws ConnectorException {
+    zoomDriver.executeDeleteRequest("/groups/" + groupId, null);
+  }
+
+  @Override
+  public Set<ZoomGroup> getAll(
+      ZoomDriver zoomDriver, ResultsFilter filter, ResultsPaginator paginator, Integer forceNum)
+      throws ConnectorException {
+    String additionalQueryString = "";
+    if (paginator.hasPagination()) {
+      additionalQueryString =
+          "?page_size="
+              + paginator.getPageSize()
+              + "&page_number="
+              + paginator.getCurrentPageNumber();
     }
+    ListGroupsResponse response =
+        zoomDriver
+            .executeGetRequest("/groups" + additionalQueryString, ListGroupsResponse.class)
+            .getResponseObject();
+    return response.getGroups();
+  }
 
-    @Override
-    public void delete(ZoomDriver zoomDriver, String groupId) throws ConnectorException {
-        zoomDriver.executeDeleteRequest("/groups/" + groupId, null);
-    }
-
-    @Override
-    public Set<ZoomGroup> getAll(ZoomDriver zoomDriver, ResultsFilter filter,
-                                 ResultsPaginator paginator, Integer forceNum) throws ConnectorException {
-        String additionalQueryString = "";
-        if (paginator.hasPagination()) {
-            additionalQueryString = "?page_size=" +
-                    paginator.getPageSize() + "&page_number=" +
-                    paginator.getCurrentPageNumber();
-
-        }
-        ListGroupsResponse response = zoomDriver.executeGetRequest(
-                "/groups" + additionalQueryString, ListGroupsResponse.class).getResponseObject();
-        return response.getGroups();
-    }
-
-    @Override
-    public ZoomGroup getOne(ZoomDriver zoomDriver, String groupId, Map<String, Object> dataMap) throws ConnectorException {
-        return zoomDriver.executeGetRequest(
-                "/groups/" + groupId, ZoomGroup.class).getResponseObject();
-    }
-
+  @Override
+  public ZoomGroup getOne(ZoomDriver zoomDriver, String groupId, Map<String, Object> dataMap)
+      throws ConnectorException {
+    return zoomDriver.executeGetRequest("/groups/" + groupId, ZoomGroup.class).getResponseObject();
+  }
 }

@@ -15,6 +15,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'com.google.cloud.artifactregistry.gradle-plugin' version '2.2.0'
+    id 'com.github.sherter.google-java-format' version '0.9'
 }
 
 repositories {
@@ -27,12 +28,16 @@ repositories {
     }
 }
 
+googleJavaFormat {
+    exclude 'generatedConfig/**/*.java'
+}
+
 apply plugin: 'com.exclamationlabs.connid.base.config.plugin'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-def build_version = System.getenv('BUILD_NUMBER') == null ? "${local_build_version}" : System.getenv('BUILD_NUMBER')
+def build_version = System.getenv('BUILD_NUMBER') == null ? System.currentTimeMillis() : System.getenv('BUILD_NUMBER')
 project.version="${project_version}-${build_version}"
 
 group = 'com.exclamationlabs.connid'
@@ -126,4 +131,7 @@ publishing {
     }
 }
 
+test {
+    useJUnitPlatform() {}
+}
 

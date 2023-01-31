@@ -2,6 +2,7 @@
 
 ## Change Log
 
++ **3.0.1** - Migrate to GAR, switch Jenkins build FIN-9902 (01/31/2023)
 + **2.4** - Migrate to Google Archive Repository FIN-9902 (11/28/2022)
 + **2.3** - Updated test method to just get the first 3 users (2022/01/18)
 + **2.2** - Updated to artifactory support (2021/12/17)

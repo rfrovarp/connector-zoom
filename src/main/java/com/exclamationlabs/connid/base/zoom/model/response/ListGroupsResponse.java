@@ -21,13 +21,13 @@ import java.util.Set;
 
 public class ListGroupsResponse {
 
-    private Set<ZoomGroup> groups;
+  private Set<ZoomGroup> groups;
 
-    public Set<ZoomGroup> getGroups() {
-        return groups;
-    }
+  public Set<ZoomGroup> getGroups() {
+    return groups;
+  }
 
-    public void setGroups(Set<ZoomGroup> groups) {
-        this.groups = groups;
-    }
+  public void setGroups(Set<ZoomGroup> groups) {
+    this.groups = groups;
+  }
 }

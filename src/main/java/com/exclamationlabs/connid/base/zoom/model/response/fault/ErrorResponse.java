@@ -20,47 +20,47 @@ import java.util.List;
 
 public class ErrorResponse {
 
-    private Integer code;
-    private String message;
+  private Integer code;
+  private String message;
 
-    private List<ErrorData> errors;
+  private List<ErrorData> errors;
 
-    public Integer getCode() {
-        return code;
+  public Integer getCode() {
+    return code;
+  }
+
+  public void setCode(Integer code) {
+    this.code = code;
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
+
+  public List<ErrorData> getErrors() {
+    return errors;
+  }
+
+  public void setErrors(List<ErrorData> errors) {
+    this.errors = errors;
+  }
+
+  public String getErrorDetails() {
+    if (getErrors() == null || getErrors().isEmpty()) {
+      return null;
+    } else {
+      StringBuilder response = new StringBuilder();
+      for (ErrorData data : getErrors()) {
+        response.append("; FIELD:");
+        response.append(data.getField());
+        response.append(", MESSAGE:");
+        response.append(data.getMessage());
+      }
+      return response.toString();
     }
-
-    public void setCode(Integer code) {
-        this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public List<ErrorData> getErrors() {
-        return errors;
-    }
-
-    public void setErrors(List<ErrorData> errors) {
-        this.errors = errors;
-    }
-
-    public String getErrorDetails() {
-        if (getErrors() == null || getErrors().isEmpty()) {
-            return null;
-        } else {
-            StringBuilder response = new StringBuilder();
-            for (ErrorData data : getErrors()) {
-                response.append("; FIELD:");
-                response.append(data.getField());
-                response.append(", MESSAGE:");
-                response.append(data.getMessage());
-            }
-            return response.toString();
-        }
-    }
+  }
 }

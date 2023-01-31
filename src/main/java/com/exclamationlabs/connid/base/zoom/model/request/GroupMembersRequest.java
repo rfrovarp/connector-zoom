@@ -17,19 +17,17 @@
 package com.exclamationlabs.connid.base.zoom.model.request;
 
 import com.exclamationlabs.connid.base.zoom.model.GroupMember;
-
 import java.util.List;
 
 public final class GroupMembersRequest {
 
-    private final List<GroupMember> members;
+  private final List<GroupMember> members;
 
-    public GroupMembersRequest(List<GroupMember> list) {
-        members = list;
-    }
+  public GroupMembersRequest(List<GroupMember> list) {
+    members = list;
+  }
 
-    public List<GroupMember> getMembers() {
-        return members;
-    }
-
+  public List<GroupMember> getMembers() {
+    return members;
+  }
 }

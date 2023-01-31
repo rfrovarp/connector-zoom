@@ -20,24 +20,24 @@ import com.google.gson.annotations.SerializedName;
 
 public class GroupMembersResponse {
 
-    private String ids;
+  private String ids;
 
-    @SerializedName("added_at")
-    private String addedAt;
+  @SerializedName("added_at")
+  private String addedAt;
 
-    public String getIds() {
-        return ids;
-    }
+  public String getIds() {
+    return ids;
+  }
 
-    public void setIds(String ids) {
-        this.ids = ids;
-    }
+  public void setIds(String ids) {
+    this.ids = ids;
+  }
 
-    public String getAddedAt() {
-        return addedAt;
-    }
+  public String getAddedAt() {
+    return addedAt;
+  }
 
-    public void setAddedAt(String addedAt) {
-        this.addedAt = addedAt;
-    }
+  public void setAddedAt(String addedAt) {
+    this.addedAt = addedAt;
+  }
 }

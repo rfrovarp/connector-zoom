@@ -58,22 +58,34 @@ public class ZoomConnectorApiIntegrationTest
   }
 
   @Test
-  @Order(100)
-  public void test100Test() {
+  @Order(50)
+  public void test050Test() {
     getConnectorFacade().test();
   }
 
   @Test
+  @Order(60)
+  public void test060Schema() {
+    assertNotNull(getConnectorFacade().schema());
+  }
+
+  @Test
   @Order(100)
-  @Disabled // Too many concurrent requests error
   public void test110UserCreate() {
 
     Set<Attribute> attributes = new HashSet<>();
-    attributes.add(new AttributeBuilder().setName(FIRST_NAME.name()).addValue("Captain").build());
+    attributes.add(
+        new AttributeBuilder()
+            .setName(FIRST_NAME.name())
+            .addValue("Captain " + UUID.randomUUID())
+            .build());
     attributes.add(new AttributeBuilder().setName(LAST_NAME.name()).addValue("America").build());
     attributes.add(new AttributeBuilder().setName(TYPE.name()).addValue(UserType.BASIC).build());
     attributes.add(
-        new AttributeBuilder().setName(EMAIL.name()).addValue("captain@america.com").build());
+        new AttributeBuilder()
+            .setName(EMAIL.name())
+            .addValue("captain" + UUID.randomUUID() + "@america.com")
+            .build());
 
     Uid newId =
         getConnectorFacade()
@@ -83,9 +95,6 @@ public class ZoomConnectorApiIntegrationTest
     generatedUserId = newId.getUidValue();
   }
 
-  @Disabled // NOTE: Test not working because Zoom is improperly returning XML error response, not
-  // JSON response.  This was not
-  // happening before
   @Test
   @Order(112)
   public void test112CrudCreateUserBadEmail() {
@@ -101,9 +110,6 @@ public class ZoomConnectorApiIntegrationTest
                 .create(ObjectClass.ACCOUNT, attributes, new OperationOptionsBuilder().build()));
   }
 
-  @Disabled // NOTE: Test not working because Zoom is improperly returning XML error response, not
-  // JSON response.  This was not
-  // happening before
   @Test
   @Order(113)
   public void test113CrudCreateUserMissingUserType() {
@@ -121,7 +127,6 @@ public class ZoomConnectorApiIntegrationTest
 
   @Test
   @Order(120)
-  @Disabled // Too many concurrent requests error
   public void test120UserModify() {
     Set<AttributeDelta> attributes = new HashSet<>();
     attributes.add(
@@ -177,7 +182,6 @@ public class ZoomConnectorApiIntegrationTest
 
   @Test
   @Order(140)
-  @Disabled // Too many concurrent requests error
   public void test140UserGet() {
     Attribute idAttribute =
         new AttributeBuilder().setName(Uid.NAME).addValue(generatedUserId).build();
@@ -269,7 +273,6 @@ public class ZoomConnectorApiIntegrationTest
 
   @Test
   @Order(390)
-  @Disabled // Too many concurrent requests error
   public void test390UserDelete() {
     getConnectorFacade()
         .delete(

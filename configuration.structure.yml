@@ -8,5 +8,14 @@ service: true # service-url
 results: true
 security:
   authenticator:
-    jwtHs256: true
+    oauth2ClientCredentials: true
+custom:
+  items:
+    required:
+      accountId:
+        type: string
+        order: 701
+        display: 'Zoom Account Id'
+        help: 'Zoom Account Id required for authentication.'
+
 

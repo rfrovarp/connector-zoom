@@ -31,12 +31,8 @@ Developed and tested in [Midpoint](https://evolveum.com/midpoint/), but also cou
 
 ## Getting started
 See <https://marketplace.zoom.us/develop> for information on setting up a Zoom developer
- account. Once you are authenticated, create a new Application with JWT authentication 
- (Develop -> Create App -> JWT).  Copy App credentials (API key, API secret)
- to a clipboard/text file for later use.
-
-Information on the JWT authentication method with Zoom is available at
-<https://marketplace.zoom.us/docs/guides/build/jwt-app> .
+ account. Once you are authenticated, create a new Server-Server OAuth app
+as documented here: <https://marketplace.zoom.us/docs/guides/build/server-to-server-oauth-app/>.
 
 Once this is all done, you can manage Users and Groups in Zoom's web UI by going to
 <https://zoom.us/meeting> and using the Admin -> User Management links.
@@ -52,12 +48,17 @@ resource configuration setup for Midpoint.
 
 - service.serviceUrl - Normally set to `https://api.zoom.us/v2`
 
-- security.authenticator.jwtHs256.issuer - Use the API key saved from the 'Getting started' instructions.
+- security.authenticator.oauth2ClientCredentials.tokenUrl - Normally set to `https://zoom.us/oauth/token`
+ 
+- security.authenticator.oauth2ClientCredentials.clientId - Obtained while managing Server-Server OAuth app
 
-- security.authenticator.jwtHs256.secret - Use the API secret saved from the 'Getting started' instructions.
+- security.authenticator.oauth2ClientCredentials.clientSecret - Obtained while managing Server-Server OAuth app
 
-- security.authenticator.jwtHs256.expirationPeriod - Expiration period in milliseconds of JWT token.  For development testing, I had set this to 30000 (30 seconds).  It should be a relatively short period of time that this token is alive, since it is just a step to get to actual access token.
+- security.authenticator.oauth2ClientCredentials.scope - Scopes seem to be recognized automatically, 
+but just in case this can be used: `/group:read:admin,/group:write:admin,/user:master,/user:write:admin`
 
+- custom.accountId - Obtained while managing Server-Server OAuth app
+ 
 - results.pagination (optional) - This should be set to `true` to support Zoom pagination for getting all users.
 
 - results.deepGet (optional) - Not needed for Zoom, should be false.
@@ -67,3 +68,5 @@ resource configuration setup for Midpoint.
 - results.importBatchSize (optional) - Not needed for Zoom, should be false.
 
 - rest.ioErrorRetries (optional, default is 5) - the number of times an API invocation will be retried before giving up.
+
+

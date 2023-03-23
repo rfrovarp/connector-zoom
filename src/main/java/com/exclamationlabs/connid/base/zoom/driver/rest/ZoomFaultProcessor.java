@@ -14,6 +14,7 @@
 package com.exclamationlabs.connid.base.zoom.driver.rest;
 
 import com.exclamationlabs.connid.base.connector.driver.rest.RestFaultProcessor;
+import com.exclamationlabs.connid.base.connector.logging.Logger;
 import com.exclamationlabs.connid.base.zoom.model.response.fault.ErrorResponse;
 import com.exclamationlabs.connid.base.zoom.model.response.fault.ErrorResponseCode;
 import com.google.gson.GsonBuilder;
@@ -24,14 +25,11 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
-import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.AlreadyExistsException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
 
 public class ZoomFaultProcessor implements RestFaultProcessor {
-
-  private static final Log LOG = Log.getLog(ZoomFaultProcessor.class);
 
   private static final ZoomFaultProcessor instance = new ZoomFaultProcessor();
 
@@ -43,14 +41,14 @@ public class ZoomFaultProcessor implements RestFaultProcessor {
     String rawResponse;
     try {
       rawResponse = EntityUtils.toString(httpResponse.getEntity(), Charsets.UTF_8);
-      LOG.info("Raw Fault response {0}", rawResponse);
+      Logger.info(this, String.format("Raw Fault response %s", rawResponse));
 
       Header responseType = httpResponse.getFirstHeader("Content-Type");
       String responseTypeValue = responseType.getValue();
       if (!StringUtils.contains(responseTypeValue, ContentType.APPLICATION_JSON.getMimeType())) {
         // received non-JSON error response from Zoom unable to process
         String errorMessage = "Unable to parse Zoom response, not valid JSON: ";
-        LOG.info("{0} {1}", errorMessage, rawResponse);
+        Logger.info(this, String.format("%s %s", errorMessage, rawResponse));
         throw new ConnectorException(errorMessage + rawResponse);
       }
 

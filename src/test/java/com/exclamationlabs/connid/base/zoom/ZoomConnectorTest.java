@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
+import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.spi.Configuration;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,15 +59,18 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
         };
     ZoomConfiguration configuration = new ZoomConfiguration();
     configuration.setServiceUrl("test");
-    configuration.setIssuer("test");
-    configuration.setExpirationPeriod(123456L);
-    configuration.setSecret("test");
+    configuration.setTokenUrl("test");
+    configuration.setClientId("test1");
+    configuration.setAccountId("1234");
+    configuration.setClientSecret(new GuardedString("test2".toCharArray()));
     connector.init(configuration);
   }
 
   @Test
   public void test100Test() {
-    prepareMockResponse("{}");
+    final String responseData =
+        "{\"id\":\"ZpRAY4X9SEipRS9kS--Img\",\"group_ids\":[\"5555\"],\"first_name\":\"Alfred\",\"last_name\":\"Neuman\",\"email\":\"alfred@mad.com\",\"type\":2,\"pmi\":5825080948,\"timezone\":\"America/Chicago\",\"verified\":0,\"created_at\":\"2020-05-06T19:22:24Z\",\"last_login_time\":\"2020-05-10T19:37:29Z\",\"pic_url\":\"https://lh6.googleusercontent.com/-mboZtlAHsM4/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclRl5BboLrsXCiJ9dRBBD1yEIG2ww/photo.jpg\",\"language\":\"en-US\",\"phone_number\":\"\",\"status\":\"active\"}";
+    prepareMockResponse(responseData);
     connector.test();
   }
 

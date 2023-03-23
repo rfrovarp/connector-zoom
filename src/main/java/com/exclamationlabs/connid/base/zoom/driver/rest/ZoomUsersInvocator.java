@@ -14,6 +14,8 @@
 package com.exclamationlabs.connid.base.zoom.driver.rest;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.connector.driver.rest.RestRequest;
+import com.exclamationlabs.connid.base.connector.logging.Logger;
 import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
 import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.zoom.model.GroupMember;
@@ -24,12 +26,9 @@ import com.exclamationlabs.connid.base.zoom.model.request.UserCreationRequest;
 import com.exclamationlabs.connid.base.zoom.model.response.GroupMembersResponse;
 import com.exclamationlabs.connid.base.zoom.model.response.ListUsersResponse;
 import java.util.*;
-import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser> {
-
-  private static final Log LOG = Log.getLog(ZoomUsersInvocator.class);
 
   @Override
   public String create(ZoomDriver zoomDriver, ZoomUser zoomUser) throws ConnectorException {
@@ -38,7 +37,14 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
         new UserCreationRequest(UserCreationType.CREATE.getZoomName(), zoomUser);
 
     ZoomUser newUser =
-        zoomDriver.executePostRequest("/users", ZoomUser.class, requestData).getResponseObject();
+        zoomDriver
+            .executeRequest(
+                new RestRequest.Builder<>(ZoomUser.class)
+                    .withPost()
+                    .withRequestUri("/users")
+                    .withRequestBody(requestData)
+                    .build())
+            .getResponseObject();
 
     if (newUser == null) {
       throw new ConnectorException("Response from user creation was invalid");
@@ -55,7 +61,12 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
   public void update(ZoomDriver zoomDriver, String userId, ZoomUser userModel)
       throws ConnectorException {
 
-    zoomDriver.executePatchRequest("/users/" + userModel.getId(), null, userModel);
+    zoomDriver.executeRequest(
+        new RestRequest.Builder<>(Void.class)
+            .withPatch()
+            .withRequestBody(userModel)
+            .withRequestUri("/users/" + userModel.getId())
+            .build());
 
     if (userModel.getGroupIds() != null) {
       updateGroupAssignments(zoomDriver, userModel.getId(), userModel.getGroupIds(), true);
@@ -64,7 +75,11 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
 
   @Override
   public void delete(ZoomDriver zoomDriver, String userId) throws ConnectorException {
-    zoomDriver.executeDeleteRequest("/users/" + userId, null);
+    zoomDriver.executeRequest(
+        new RestRequest.Builder<>(Void.class)
+            .withDelete()
+            .withRequestUri("/users/" + userId)
+            .build());
   }
 
   @Override
@@ -82,7 +97,11 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
 
     ListUsersResponse response =
         zoomDriver
-            .executeGetRequest("/users" + additionalQueryString, ListUsersResponse.class)
+            .executeRequest(
+                new RestRequest.Builder<>(ListUsersResponse.class)
+                    .withGet()
+                    .withRequestUri("/users" + additionalQueryString)
+                    .build())
             .getResponseObject();
     return response.getUsers();
   }
@@ -90,7 +109,13 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
   @Override
   public ZoomUser getOne(ZoomDriver zoomDriver, String userId, Map<String, Object> dataMap)
       throws ConnectorException {
-    return zoomDriver.executeGetRequest("/users/" + userId, ZoomUser.class).getResponseObject();
+    return zoomDriver
+        .executeRequest(
+            new RestRequest.Builder<>(ZoomUser.class)
+                .withGet()
+                .withRequestUri("/users/" + userId)
+                .build())
+        .getResponseObject();
   }
 
   private void updateGroupAssignments(
@@ -103,9 +128,14 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
 
     for (String groupId : currentGroupIds) {
       if (!updatedGroupIds.contains(groupId)) {
-        // group was removed
-        driver.executeDeleteRequest("/groups/" + groupId + "/members/" + userId, null);
-        LOG.info("Successfully removed group id {0} from user id {1}", groupId, userId);
+        driver.executeRequest(
+            new RestRequest.Builder<>(Void.class)
+                .withDelete()
+                .withRequestUri("/groups/" + groupId + "/members/" + userId)
+                .build());
+        Logger.info(
+            this,
+            String.format("Successfully removed group id %s from user id %s", groupId, userId));
       }
     }
 
@@ -113,7 +143,8 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
       if (!currentGroupIds.contains(groupId)) {
         // new group was added
         addGroupToUser(driver, groupId, userId);
-        LOG.info("Successfully added group id {0} to user id {1}", groupId, userId);
+        Logger.info(
+            this, String.format("Successfully added group id %s to user id %s", groupId, userId));
       }
     }
   }
@@ -125,11 +156,19 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
 
     GroupMembersResponse response =
         driver
-            .executePostRequest(
-                "/groups/" + groupId + "/members", GroupMembersResponse.class, membersRequest)
+            .executeRequest(
+                new RestRequest.Builder<>(GroupMembersResponse.class)
+                    .withPost()
+                    .withRequestUri("/groups/" + groupId + "/members")
+                    .withRequestBody(membersRequest)
+                    .build())
             .getResponseObject();
+
     if (response == null || response.getAddedAt() == null) {
-      throw new ConnectorException("Unexpected response received while adding user to group");
+      throw new ConnectorException(
+          String.format(
+              "Unexpected response received while adding user id %s to group id %s",
+              userId, groupId));
     }
   }
 }

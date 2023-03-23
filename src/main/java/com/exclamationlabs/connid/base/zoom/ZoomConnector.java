@@ -18,11 +18,13 @@ package com.exclamationlabs.connid.base.zoom;
 
 import com.exclamationlabs.connid.base.connector.BaseFullAccessConnector;
 import com.exclamationlabs.connid.base.connector.authenticator.Authenticator;
-import com.exclamationlabs.connid.base.connector.authenticator.JWTHS256Authenticator;
+import com.exclamationlabs.connid.base.connector.authenticator.OAuth2TokenClientCredentialsAuthenticator;
 import com.exclamationlabs.connid.base.zoom.adapter.ZoomGroupsAdapter;
 import com.exclamationlabs.connid.base.zoom.adapter.ZoomUsersAdapter;
 import com.exclamationlabs.connid.base.zoom.configuration.ZoomConfiguration;
 import com.exclamationlabs.connid.base.zoom.driver.rest.ZoomDriver;
+import java.util.Collections;
+import java.util.Map;
 import org.identityconnectors.framework.spi.ConnectorClass;
 
 @ConnectorClass(
@@ -32,7 +34,19 @@ public class ZoomConnector extends BaseFullAccessConnector<ZoomConfiguration> {
 
   public ZoomConnector() {
     super(ZoomConfiguration.class);
-    setAuthenticator((Authenticator) new JWTHS256Authenticator());
+    setAuthenticator(
+        (Authenticator)
+            new OAuth2TokenClientCredentialsAuthenticator() {
+              @Override
+              public String getGrantType() {
+                return "account_credentials";
+              }
+
+              @Override
+              public Map<String, String> getAdditionalFormFields() {
+                return Collections.singletonMap("account_id", configuration.getAccountId());
+              }
+            });
     setDriver(new ZoomDriver());
     setAdapters(new ZoomUsersAdapter(), new ZoomGroupsAdapter());
   }

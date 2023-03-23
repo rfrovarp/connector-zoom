@@ -14,6 +14,7 @@
 package com.exclamationlabs.connid.base.zoom.driver.rest;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.connector.driver.rest.RestRequest;
 import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
 import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.zoom.model.ZoomGroup;
@@ -28,7 +29,14 @@ public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGrou
   public String create(ZoomDriver zoomDriver, ZoomGroup groupModel) throws ConnectorException {
 
     ZoomGroup newGroup =
-        zoomDriver.executePostRequest("/groups", ZoomGroup.class, groupModel).getResponseObject();
+        zoomDriver
+            .executeRequest(
+                new RestRequest.Builder<>(ZoomGroup.class)
+                    .withPost()
+                    .withRequestUri("/groups")
+                    .withRequestBody(groupModel)
+                    .build())
+            .getResponseObject();
 
     if (newGroup == null || newGroup.getId() == null) {
       throw new ConnectorException("Response from group creation was invalid");
@@ -46,12 +54,21 @@ public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGrou
     // so create a new object w/ just the name set
     modifyGroup.setName(groupModel.getName());
 
-    zoomDriver.executePatchRequest("/groups/" + groupModel.getId(), null, groupModel);
+    zoomDriver.executeRequest(
+        new RestRequest.Builder<>(Void.class)
+            .withPatch()
+            .withRequestUri("/groups/" + groupModel.getId())
+            .withRequestBody(modifyGroup)
+            .build());
   }
 
   @Override
   public void delete(ZoomDriver zoomDriver, String groupId) throws ConnectorException {
-    zoomDriver.executeDeleteRequest("/groups/" + groupId, null);
+    zoomDriver.executeRequest(
+        new RestRequest.Builder<>(Void.class)
+            .withDelete()
+            .withRequestUri("/groups/" + groupId)
+            .build());
   }
 
   @Override
@@ -68,7 +85,11 @@ public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGrou
     }
     ListGroupsResponse response =
         zoomDriver
-            .executeGetRequest("/groups" + additionalQueryString, ListGroupsResponse.class)
+            .executeRequest(
+                new RestRequest.Builder<>(ListGroupsResponse.class)
+                    .withGet()
+                    .withRequestUri("/groups" + additionalQueryString)
+                    .build())
             .getResponseObject();
     return response.getGroups();
   }
@@ -76,6 +97,12 @@ public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGrou
   @Override
   public ZoomGroup getOne(ZoomDriver zoomDriver, String groupId, Map<String, Object> dataMap)
       throws ConnectorException {
-    return zoomDriver.executeGetRequest("/groups/" + groupId, ZoomGroup.class).getResponseObject();
+    return zoomDriver
+        .executeRequest(
+            new RestRequest.Builder<>(ZoomGroup.class)
+                .withGet()
+                .withRequestUri("/groups/" + groupId)
+                .build())
+        .getResponseObject();
   }
 }

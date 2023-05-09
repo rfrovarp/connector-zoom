@@ -1,7 +1,7 @@
 # connector-zoom
 
 ## Change Log
-
++ **4.0.2** - Change Zoom paid account for Groups to be no-op instead of erroring FIN-10017 (05/09/2023)
 + **4.0.1** - Update to OAuth2 FIN-10017 (03/23/2023)
 + **3.0.1** - Migrate to GAR, switch Jenkins build FIN-9902 (01/31/2023)
 + **2.4** - Migrate to Google Archive Repository FIN-9902 (11/28/2022)

@@ -13,10 +13,11 @@
 
 package com.exclamationlabs.connid.base.zoom.driver.rest;
 
+import static com.exclamationlabs.connid.base.zoom.model.response.fault.ErrorResponseCode.*;
+
 import com.exclamationlabs.connid.base.connector.driver.rest.RestFaultProcessor;
 import com.exclamationlabs.connid.base.connector.logging.Logger;
 import com.exclamationlabs.connid.base.zoom.model.response.fault.ErrorResponse;
-import com.exclamationlabs.connid.base.zoom.model.response.fault.ErrorResponseCode;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import org.apache.commons.codec.Charsets;
@@ -87,17 +88,20 @@ public class ZoomFaultProcessor implements RestFaultProcessor {
 
   private Boolean checkRecognizedFaultCodes(ErrorResponse faultData) {
     switch (faultData.getCode()) {
-      case ErrorResponseCode.USER_NOT_FOUND:
-      case ErrorResponseCode.GROUP_NOT_FOUND:
+      case PAID_SUBSCRIPTION_REQUIRED:
+        throw new PaidAccountRequiredException(faultData.getMessage());
+
+      case USER_NOT_FOUND:
+      case GROUP_NOT_FOUND:
         // ignore fault and return to Midpoint
         return false;
 
-      case ErrorResponseCode.GROUP_NAME_ALREADY_EXISTS:
-      case ErrorResponseCode.USER_ALREADY_EXISTS:
+      case GROUP_NAME_ALREADY_EXISTS:
+      case USER_ALREADY_EXISTS:
         throw new AlreadyExistsException(
             "Supplied User/Group already exists. Please enter different input.");
 
-      case ErrorResponseCode.VALIDATION_FAILED:
+      case VALIDATION_FAILED:
         throw new InvalidAttributeValueException(
             "Validation Failed. " + faultData.getErrorDetails());
     }

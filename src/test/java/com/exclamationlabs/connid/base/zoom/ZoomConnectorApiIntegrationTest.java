@@ -34,7 +34,7 @@ public class ZoomConnectorApiIntegrationTest
     extends ApiIntegrationTest<ZoomConfiguration, ZoomConnector> {
 
   private static String generatedUserId;
-  private static String generatedGroupId = "dummy";
+  private static String generatedGroupId;
 
   @Override
   protected ZoomConfiguration getConfiguration() {
@@ -201,7 +201,6 @@ public class ZoomConnectorApiIntegrationTest
 
   @Test
   @Order(210)
-  @Disabled // Only available for paid account
   public void test210GroupCreate() {
     Set<Attribute> attributes = new HashSet<>();
     attributes.add(
@@ -214,7 +213,7 @@ public class ZoomConnectorApiIntegrationTest
 
   @Test
   @Order(220)
-  public void test220GroupModify() { // Only available for paid account
+  public void test220GroupModify() {
     Set<AttributeDelta> attributes = new HashSet<>();
     attributes.add(
         new AttributeDeltaBuilder()
@@ -232,25 +231,22 @@ public class ZoomConnectorApiIntegrationTest
 
   @Test
   @Order(230)
-  public void test230GroupsGet() { // Only available for paid account
+  public void test230GroupsGet() {
     results = new ArrayList<>();
     getConnectorFacade()
         .search(ObjectClass.GROUP, null, handler, new OperationOptionsBuilder().build());
+    assertFalse(results.isEmpty());
     assertTrue(
-        results.isEmpty()); // Groups list empty when Zoom Groups only available for paid account
-    //    assertTrue(results.size() >= 1);
-    //    assertTrue(
-    //        StringUtils.isNotBlank(
-    //            results.get(0).getAttributeByName(GROUP_ID.name()).getValue().get(0).toString()));
-    //    assertTrue(
-    //        StringUtils.isNotBlank(
-    //
-    // results.get(0).getAttributeByName(GROUP_NAME.name()).getValue().get(0).toString()));
+        StringUtils.isNotBlank(
+            results.get(0).getAttributeByName(GROUP_ID.name()).getValue().get(0).toString()));
+    assertTrue(
+        StringUtils.isNotBlank(
+            results.get(0).getAttributeByName(GROUP_NAME.name()).getValue().get(0).toString()));
   }
 
   @Test
   @Order(240)
-  public void test240GroupGet() { // Only available for paid account
+  public void test240GroupGet() {
     Attribute idAttribute =
         new AttributeBuilder().setName(Uid.NAME).addValue(generatedGroupId).build();
     results = new ArrayList<>();
@@ -260,13 +256,12 @@ public class ZoomConnectorApiIntegrationTest
             new EqualsFilter(idAttribute),
             handler,
             new OperationOptionsBuilder().build());
-    assertTrue(
-        results.isEmpty()); // Matching group empty when Zoom Groups only available for paid account
+    assertFalse(results.isEmpty());
   }
 
   @Test
   @Order(290)
-  public void test290GroupDelete() { // Only available for paid account
+  public void test290GroupDelete() {
     getConnectorFacade()
         .delete(
             ObjectClass.GROUP, new Uid(generatedGroupId), new OperationOptionsBuilder().build());

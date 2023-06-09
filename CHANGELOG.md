@@ -1,6 +1,7 @@
 # connector-zoom
 
 ## Change Log
++ **4.1.0** - Add deactivate support FIN-10620 (06/08/2023)
 + **4.0.3** - Adjust unit test now that Elabs Zoom account is pro level (05/10/2023)
 + **4.0.2** - Change Zoom paid account for Groups to be no-op instead of erroring FIN-10017 (05/09/2023)
 + **4.0.1** - Update to OAuth2 FIN-10017 (03/23/2023)

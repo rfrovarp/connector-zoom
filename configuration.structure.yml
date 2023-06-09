@@ -17,5 +17,17 @@ custom:
         order: 701
         display: 'Zoom Account Id'
         help: 'Zoom Account Id required for authentication.'
-
+    optional:
+      userDeactivationEnabled:
+        type: boolean
+        order: 702
+        default: 'false'
+        display: 'User Deactivation Enabled'
+        help: 'If true, a request to delete a Zoom user will instead deactivate the user on Zoom.'
+      immediateLogoutOnDeactivate:
+        type: boolean
+        order: 703
+        default: 'false'
+        display: 'Immediate Logout on Deactivate'
+        help: 'If true, a SSO logout via Zoom API will also be executed when a user is deactivated.'
 

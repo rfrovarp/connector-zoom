@@ -134,7 +134,12 @@ public class ZoomConnectorApiIntegrationTest
             .setName(LAST_NAME.name())
             .addValueToReplace("America2")
             .build());
-
+    // Test user status change
+    //    attributes.add(
+    //            new AttributeDeltaBuilder()
+    //                    .setName(__ENABLE__.name())
+    //                    .addValueToReplace(true)
+    //                    .build());
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
@@ -162,6 +167,8 @@ public class ZoomConnectorApiIntegrationTest
   }
 
   @Test
+  @Disabled // Connector no longer supports native pagination since multiple getAll requests are
+  // needed
   @Order(131)
   public void test131UsersGetWithPaging() {
     results = new ArrayList<>();

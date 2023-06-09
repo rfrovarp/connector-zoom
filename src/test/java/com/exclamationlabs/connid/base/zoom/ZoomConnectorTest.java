@@ -126,7 +126,7 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
   public void test130UsersGet() {
     final String responseData =
         "{\"page_count\":1,\"page_number\":1,\"page_size\":30,\"total_records\":1,\"users\":[{\"id\":\"ZpRAY4X9SEipRS9kS--Img\",\"first_name\":\"Alfred\",\"last_name\":\"Neuman\",\"email\":\"alfred@mad.com\",\"type\":2,\"pmi\":5825080948,\"timezone\":\"America/Chicago\",\"verified\":0,\"created_at\":\"2020-05-06T19:22:24Z\",\"last_login_time\":\"2020-05-10T19:37:29Z\",\"pic_url\":\"https://lh6.googleusercontent.com/-mboZtlAHsM4/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclRl5BboLrsXCiJ9dRBBD1yEIG2ww/photo.jpg\",\"language\":\"en-US\",\"phone_number\":\"\",\"status\":\"active\"}]}";
-    prepareMockResponse(responseData);
+    prepareMockResponse(responseData, responseData, responseData);
 
     List<String> idValues = new ArrayList<>();
     List<String> nameValues = new ArrayList<>();

@@ -23,9 +23,12 @@ import com.exclamationlabs.connid.base.zoom.model.UserCreationType;
 import com.exclamationlabs.connid.base.zoom.model.ZoomUser;
 import com.exclamationlabs.connid.base.zoom.model.request.GroupMembersRequest;
 import com.exclamationlabs.connid.base.zoom.model.request.UserCreationRequest;
+import com.exclamationlabs.connid.base.zoom.model.request.UserStatusChangeRequest;
 import com.exclamationlabs.connid.base.zoom.model.response.GroupMembersResponse;
 import com.exclamationlabs.connid.base.zoom.model.response.ListUsersResponse;
 import java.util.*;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser> {
@@ -53,7 +56,6 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
     if (zoomUser.getGroupIds() != null && !zoomUser.getGroupIds().isEmpty()) {
       updateGroupAssignments(zoomDriver, newUser.getId(), zoomUser.getGroupIds(), false);
     }
-
     return newUser.getId();
   }
 
@@ -61,49 +63,45 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
   public void update(ZoomDriver zoomDriver, String userId, ZoomUser userModel)
       throws ConnectorException {
 
-    zoomDriver.executeRequest(
-        new RestRequest.Builder<>(Void.class)
-            .withPatch()
-            .withRequestBody(userModel)
-            .withRequestUri("/users/" + userModel.getId())
-            .build());
+    boolean deactivated = updateUserStatus(zoomDriver, userModel.getStatus(), userId);
 
-    if (userModel.getGroupIds() != null) {
-      updateGroupAssignments(zoomDriver, userModel.getId(), userModel.getGroupIds(), true);
+    if (!deactivated) {
+      zoomDriver.executeRequest(
+          new RestRequest.Builder<>(Void.class)
+              .withPatch()
+              .withRequestBody(userModel)
+              .withRequestUri("/users/" + userId)
+              .build());
+
+      if (userModel.getGroupIds() != null) {
+        updateGroupAssignments(zoomDriver, userModel.getId(), userModel.getGroupIds(), true);
+      }
     }
   }
 
   @Override
   public void delete(ZoomDriver zoomDriver, String userId) throws ConnectorException {
-    zoomDriver.executeRequest(
-        new RestRequest.Builder<>(Void.class)
-            .withDelete()
-            .withRequestUri("/users/" + userId)
-            .build());
+    if (BooleanUtils.isTrue(zoomDriver.getConfiguration().getUserDeactivationEnabled())) {
+      updateUserStatus(zoomDriver, "inactive", userId);
+    } else {
+      zoomDriver.executeRequest(
+          new RestRequest.Builder<>(Void.class)
+              .withDelete()
+              .withRequestUri("/users/" + userId)
+              .build());
+    }
   }
 
   @Override
   public Set<ZoomUser> getAll(
       ZoomDriver zoomDriver, ResultsFilter filter, ResultsPaginator paginator, Integer forceNumber)
       throws ConnectorException {
-    String additionalQueryString = "";
-    if (paginator.hasPagination()) {
-      additionalQueryString =
-          "?page_size="
-              + paginator.getPageSize()
-              + "&page_number="
-              + paginator.getCurrentPageNumber();
-    }
 
-    ListUsersResponse response =
-        zoomDriver
-            .executeRequest(
-                new RestRequest.Builder<>(ListUsersResponse.class)
-                    .withGet()
-                    .withRequestUri("/users" + additionalQueryString)
-                    .build())
-            .getResponseObject();
-    return response.getUsers();
+    Set<ZoomUser> allUsers = getUsersByStatus(zoomDriver, "active");
+    allUsers.addAll(getUsersByStatus(zoomDriver, "inactive"));
+    allUsers.addAll(getUsersByStatus(zoomDriver, "pending"));
+
+    return allUsers;
   }
 
   @Override
@@ -116,6 +114,57 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
                 .withRequestUri("/users/" + userId)
                 .build())
         .getResponseObject();
+  }
+
+  private Set<ZoomUser> getUsersByStatus(ZoomDriver zoomDriver, String status) {
+    String additionalQueryString = "?status=" + status;
+    return zoomDriver
+        .executeRequest(
+            new RestRequest.Builder<>(ListUsersResponse.class)
+                .withGet()
+                .withRequestUri("/users" + additionalQueryString)
+                .build())
+        .getResponseObject()
+        .getUsers();
+  }
+
+  private boolean updateUserStatus(ZoomDriver zoomDriver, String desiredStatus, String userId) {
+    if (desiredStatus == null) {
+      return false;
+    }
+
+    ZoomUser currentUser = getOne(zoomDriver, userId, null);
+    if (StringUtils.equalsIgnoreCase(currentUser.getStatus(), desiredStatus)) {
+      return false;
+    }
+
+    UserStatusChangeRequest statusChangeRequest = new UserStatusChangeRequest();
+    String statusVerb =
+        StringUtils.equalsIgnoreCase(desiredStatus, "active") ? "activate" : "deactivate";
+    statusChangeRequest.setAction(statusVerb);
+    Logger.info(
+        this,
+        String.format("Changing status of user id %s, request verb is %s", userId, statusVerb));
+    zoomDriver.executeRequest(
+        new RestRequest.Builder<>(Void.class)
+            .withPut()
+            .withRequestBody(statusChangeRequest)
+            .withRequestUri("/users/" + userId + "/status")
+            .build());
+
+    if (StringUtils.equalsIgnoreCase(desiredStatus, "inactive")
+        && BooleanUtils.isTrue(zoomDriver.getConfiguration().getImmediateLogoutOnDeactivate())) {
+      Logger.info(
+          this, String.format("Deactivation completed.  Deleting SSOToken for user id %s", userId));
+
+      zoomDriver.executeRequest(
+          new RestRequest.Builder<>(Void.class)
+              .withDelete()
+              .withRequestUri("/users/" + userId + "/token")
+              .build());
+    }
+
+    return StringUtils.equalsIgnoreCase(desiredStatus, "inactive");
   }
 
   private void updateGroupAssignments(

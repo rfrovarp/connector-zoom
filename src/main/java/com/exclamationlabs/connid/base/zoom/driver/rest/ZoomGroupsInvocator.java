@@ -97,21 +97,13 @@ public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGrou
   public Set<ZoomGroup> getAll(
       ZoomDriver zoomDriver, ResultsFilter filter, ResultsPaginator paginator, Integer forceNum)
       throws ConnectorException {
-    String additionalQueryString = "";
-    if (paginator.hasPagination()) {
-      additionalQueryString =
-          "?page_size="
-              + paginator.getPageSize()
-              + "&page_number="
-              + paginator.getCurrentPageNumber();
-    }
     try {
       ListGroupsResponse response =
           zoomDriver
               .executeRequest(
                   new RestRequest.Builder<>(ListGroupsResponse.class)
                       .withGet()
-                      .withRequestUri("/groups" + additionalQueryString)
+                      .withRequestUri("/groups")
                       .build())
               .getResponseObject();
       return response.getGroups();

@@ -12,22 +12,28 @@ Developed and tested in [Midpoint](https://evolveum.com/midpoint/), but also cou
 
 - As of this writing, there is no public Java API for Zoom User and Group management.
 
+- Connector versions 4.0.1 and above now support OAuth2 for authentication.  Prior JWT authentication is no longer supported by Zoom.
+
 - Limitations:
  
     - You can create a Zoom developer account to access the API, but you won't be successful
     in creating Groups of users unless you have paid for a non-Basic (non-free)
-     account with Zoom.  See <https://zoom.us/pricing> for more information.
-     
-    - This connector has been developed to work with Zoom JWT authentication, since JWT
-    is most ideal for application-level authentication.  Zoom also supports OAuth2 for authentication
-    but that authentication strategy is not implemented in this connector.
- 
+     account with Zoom.  See <https://zoom.us/pricing> for more information.     
+
     - When creating a user, the user must verify his email address and move from 'pending' to 'active'
  status before he will actually be returned in a list of Zoom users or be assigned to groups.
  
     - The connector has only been tested with 'Basic' users in Zoom and normal user
     creation (other types are autoCreate, custCreate and ssoCreate).  Some of these
     types cannot be used unless you have a particular type of Zoom account.
+
+    - If a Zoom user is deactivated, it's information cannot be updated in any other way until/when 
+  it has been reactivated.
+  
+    - Per API, list of Zoom users must be obtained by one of three statuses (active, inactive, pending) - 
+  https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/users ... for this reason
+  the invocator needs to make three separate requests.  Therefore, Zoom does not support pagination natively
+  to return the correct results.
 
 ## Getting started
 See <https://marketplace.zoom.us/develop> for information on setting up a Zoom developer

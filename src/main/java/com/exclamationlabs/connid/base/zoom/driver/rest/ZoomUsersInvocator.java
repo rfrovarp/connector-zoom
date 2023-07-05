@@ -99,7 +99,6 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
 
     Set<ZoomUser> allUsers = getUsersByStatus(zoomDriver, "active");
     allUsers.addAll(getUsersByStatus(zoomDriver, "inactive"));
-    allUsers.addAll(getUsersByStatus(zoomDriver, "pending"));
 
     return allUsers;
   }

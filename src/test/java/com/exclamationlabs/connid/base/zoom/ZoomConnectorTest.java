@@ -99,6 +99,7 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
   public void test120UserModify() {
     final String getUserResponseData =
         "{\"id\":\"ZpRAY4X9SEipRS9kS--Img\",\"group_ids\":[\"5555\"],\"first_name\":\"Alfred\",\"last_name\":\"Neuman\",\"email\":\"alfred@mad.com\",\"type\":2,\"pmi\":5825080948,\"timezone\":\"America/Chicago\",\"verified\":0,\"created_at\":\"2020-05-06T19:22:24Z\",\"last_login_time\":\"2020-05-10T19:37:29Z\",\"pic_url\":\"https://lh6.googleusercontent.com/-mboZtlAHsM4/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclRl5BboLrsXCiJ9dRBBD1yEIG2ww/photo.jpg\",\"language\":\"en-US\",\"phone_number\":\"\",\"status\":\"active\"}";
+
     final String addGroupResponseData = "{\"ids\":\"\",\"added_at\":\"2020-05-13T18:31:35Z\"}";
 
     prepareMockResponse(getUserResponseData, addGroupResponseData);
@@ -110,7 +111,7 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
         new AttributeDeltaBuilder().setName(USER_ID.name()).addValueToReplace("1234").build());
 
     attributes.add(
-        new AttributeDeltaBuilder().setName(GROUP_IDS.name()).addValueToReplace("5678").build());
+        new AttributeDeltaBuilder().setName(GROUP_IDS.name()).addValueToAdd("5678").build());
 
     Set<AttributeDelta> response =
         connector.updateDelta(

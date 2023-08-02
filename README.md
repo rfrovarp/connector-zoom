@@ -22,6 +22,11 @@ Developed and tested in [Midpoint](https://evolveum.com/midpoint/), but also cou
 
     - When creating a user, the user must verify his email address and move from 'pending' to 'active'
  status before he will actually be returned in a list of Zoom users or be assigned to groups.
+  
+    - When a user is in a 'pending' status, the API only returns the user's id.  None of the other information is returend.
+  
+    - Because of this manual user verification step, it is not possible for a user to be assigned to group(s) while
+    it is being created.  You can only add and remove groups from an 'active' user.
  
     - The connector has only been tested with 'Basic' users in Zoom and normal user
     creation (other types are autoCreate, custCreate and ssoCreate).  Some of these

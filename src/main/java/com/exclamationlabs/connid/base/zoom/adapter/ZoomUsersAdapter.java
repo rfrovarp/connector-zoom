@@ -107,7 +107,9 @@ public class ZoomUsersAdapter extends BaseAdapter<ZoomUser, ZoomConfiguration> {
     user.setPersonalMeetingId(
         AdapterValueTypeConverter.getSingleAttributeValue(
             Long.class, attributes, PERSONAL_MEETING_ID));
-    user.setGroupIds(readAssignments(attributes, GROUP_IDS));
+
+    user.setGroupsToRemove(readAssignments(multiValueRemoved, GROUP_IDS));
+    user.setGroupsToAdd(readAssignments(multiValueAdded, GROUP_IDS));
 
     return user;
   }

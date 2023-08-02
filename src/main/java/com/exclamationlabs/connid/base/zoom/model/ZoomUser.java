@@ -59,6 +59,10 @@ public class ZoomUser implements IdentityModel {
   @SerializedName("group_ids")
   private Set<String> groupIds;
 
+  private transient Set<String> groupsToAdd;
+
+  private transient Set<String> groupsToRemove;
+
   public String getId() {
     return id;
   }
@@ -187,5 +191,21 @@ public class ZoomUser implements IdentityModel {
   @Override
   public String getIdentityNameValue() {
     return getEmail();
+  }
+
+  public Set<String> getGroupsToAdd() {
+    return groupsToAdd;
+  }
+
+  public void setGroupsToAdd(Set<String> groupsToAdd) {
+    this.groupsToAdd = groupsToAdd;
+  }
+
+  public Set<String> getGroupsToRemove() {
+    return groupsToRemove;
+  }
+
+  public void setGroupsToRemove(Set<String> groupsToRemove) {
+    this.groupsToRemove = groupsToRemove;
   }
 }

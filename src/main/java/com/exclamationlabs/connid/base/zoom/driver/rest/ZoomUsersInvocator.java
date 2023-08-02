@@ -52,20 +52,18 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
     if (newUser == null) {
       throw new ConnectorException("Response from user creation was invalid");
     }
-
-    if (zoomUser.getGroupIds() != null && !zoomUser.getGroupIds().isEmpty()) {
-      updateGroupAssignments(zoomDriver, newUser.getId(), zoomUser.getGroupIds(), false);
-    }
     return newUser.getId();
   }
 
   @Override
   public void update(ZoomDriver zoomDriver, String userId, ZoomUser userModel)
       throws ConnectorException {
+    boolean deactivateOnly = StringUtils.equalsIgnoreCase(userModel.getStatus(), "inactive");
+    updateUserStatus(zoomDriver, userModel.getStatus(), userId);
 
-    boolean deactivated = updateUserStatus(zoomDriver, userModel.getStatus(), userId);
-
-    if (!deactivated) {
+    // If this Update request was an attempt to deactivate a user, do not invoke any other update
+    // attempts
+    if (!deactivateOnly) {
       zoomDriver.executeRequest(
           new RestRequest.Builder<>(Void.class)
               .withPatch()
@@ -73,8 +71,9 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
               .withRequestUri("/users/" + userId)
               .build());
 
-      if (userModel.getGroupIds() != null) {
-        updateGroupAssignments(zoomDriver, userModel.getId(), userModel.getGroupIds(), true);
+      if (userModel.getGroupsToAdd() != null || userModel.getGroupsToRemove() != null) {
+        updateGroupAssignments(
+            zoomDriver, userId, userModel.getGroupsToAdd(), userModel.getGroupsToRemove());
       }
     }
   }
@@ -127,14 +126,14 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
         .getUsers();
   }
 
-  private boolean updateUserStatus(ZoomDriver zoomDriver, String desiredStatus, String userId) {
+  private void updateUserStatus(ZoomDriver zoomDriver, String desiredStatus, String userId) {
     if (desiredStatus == null) {
-      return false;
+      return;
     }
 
     ZoomUser currentUser = getOne(zoomDriver, userId, null);
     if (StringUtils.equalsIgnoreCase(currentUser.getStatus(), desiredStatus)) {
-      return false;
+      return;
     }
 
     UserStatusChangeRequest statusChangeRequest = new UserStatusChangeRequest();
@@ -162,37 +161,36 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
               .withRequestUri("/users/" + userId + "/token")
               .build());
     }
-
-    return StringUtils.equalsIgnoreCase(desiredStatus, "inactive");
   }
 
   private void updateGroupAssignments(
-      ZoomDriver driver, String userId, Set<String> updatedGroupIds, boolean userUpdate) {
-    Set<String> currentGroupIds = new HashSet<>();
-    if (userUpdate) {
-      ZoomUser temp = getOne(driver, userId, Collections.emptyMap());
-      currentGroupIds = temp.getGroupIds();
-    }
+      ZoomDriver driver, String userId, Set<String> toAdd, Set<String> toRemove) {
 
-    for (String groupId : currentGroupIds) {
-      if (!updatedGroupIds.contains(groupId)) {
-        driver.executeRequest(
-            new RestRequest.Builder<>(Void.class)
-                .withDelete()
-                .withRequestUri("/groups/" + groupId + "/members/" + userId)
-                .build());
-        Logger.info(
-            this,
-            String.format("Successfully removed group id %s from user id %s", groupId, userId));
+    ZoomUser temp = getOne(driver, userId, Collections.emptyMap());
+    Set<String> currentGroupIds = temp.getGroupIds();
+
+    if (toRemove != null) {
+      for (String groupId : currentGroupIds) {
+        if (toRemove.contains(groupId)) {
+          driver.executeRequest(
+              new RestRequest.Builder<>(Void.class)
+                  .withDelete()
+                  .withRequestUri("/groups/" + groupId + "/members/" + userId)
+                  .build());
+          Logger.info(
+              this,
+              String.format("Successfully removed group id %s from user id %s", groupId, userId));
+        }
       }
     }
 
-    for (String groupId : updatedGroupIds) {
-      if (!currentGroupIds.contains(groupId)) {
-        // new group was added
-        addGroupToUser(driver, groupId, userId);
-        Logger.info(
-            this, String.format("Successfully added group id %s to user id %s", groupId, userId));
+    if (toAdd != null) {
+      for (String groupId : toAdd) {
+        if (!currentGroupIds.contains(groupId)) {
+          addGroupToUser(driver, groupId, userId);
+          Logger.info(
+              this, String.format("Successfully added group id %s to user id %s", groupId, userId));
+        }
       }
     }
   }

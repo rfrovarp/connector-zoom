@@ -29,12 +29,22 @@ import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.junit.jupiter.api.*;
 
+/*
+ NOTE: In Zoom, you can only see and update users that are active (email verification is
+ complete).  For that reason, the testing here is split between creation and deletion of a 'pending' user,
+ while the Update/Get functionality tests against an already existing user that is active.
+*/
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ZoomConnectorApiIntegrationTest
     extends ApiIntegrationTest<ZoomConfiguration, ZoomConnector> {
 
   private static String generatedUserId;
   private static String generatedGroupId;
+
+  private static final String existingUserId = "redacted";
+  private static final String existingGroupId = "redacted";
+
+  private static final String newName = "Charms " + System.currentTimeMillis();
 
   @Override
   protected ZoomConfiguration getConfiguration() {
@@ -72,7 +82,7 @@ public class ZoomConnectorApiIntegrationTest
   @Test
   @Order(100)
   public void test110UserCreate() {
-
+    // Create a 'pending' user that will be deleted at the end
     Set<Attribute> attributes = new HashSet<>();
     attributes.add(
         new AttributeBuilder()
@@ -128,23 +138,20 @@ public class ZoomConnectorApiIntegrationTest
   @Test
   @Order(120)
   public void test120UserModify() {
+    // modify the existing user
     Set<AttributeDelta> attributes = new HashSet<>();
     attributes.add(
+        new AttributeDeltaBuilder().setName(LAST_NAME.name()).addValueToReplace(newName).build());
+    attributes.add(
         new AttributeDeltaBuilder()
-            .setName(LAST_NAME.name())
-            .addValueToReplace("America2")
+            .setName(GROUP_IDS.name())
+            .addValueToAdd(existingGroupId)
             .build());
-    // Test user status change
-    //    attributes.add(
-    //            new AttributeDeltaBuilder()
-    //                    .setName(__ENABLE__.name())
-    //                    .addValueToReplace(true)
-    //                    .build());
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
                 ObjectClass.ACCOUNT,
-                new Uid(generatedUserId),
+                new Uid(existingUserId),
                 attributes,
                 new OperationOptionsBuilder().build());
     assertNotNull(response);
@@ -191,7 +198,7 @@ public class ZoomConnectorApiIntegrationTest
   @Order(140)
   public void test140UserGet() {
     Attribute idAttribute =
-        new AttributeBuilder().setName(Uid.NAME).addValue(generatedUserId).build();
+        new AttributeBuilder().setName(Uid.NAME).addValue(existingUserId).build();
 
     results = new ArrayList<>();
     getConnectorFacade()
@@ -204,6 +211,167 @@ public class ZoomConnectorApiIntegrationTest
     assertTrue(
         StringUtils.isNotBlank(
             results.get(0).getAttributeByName(USER_ID.name()).getValue().get(0).toString()));
+    assertTrue(
+        StringUtils.startsWithIgnoreCase(
+            "Jimmy",
+            results.get(0).getAttributeByName(FIRST_NAME.name()).getValue().get(0).toString()));
+    assertTrue(
+        StringUtils.equalsIgnoreCase(
+            newName,
+            results.get(0).getAttributeByName(LAST_NAME.name()).getValue().get(0).toString()));
+    assertTrue(
+        StringUtils.equalsIgnoreCase(
+            existingGroupId,
+            results.get(0).getAttributeByName(GROUP_IDS.name()).getValue().get(0).toString()));
+  }
+
+  @Test
+  @Order(150)
+  public void test150UserRemoveGroup() {
+    // modify the existing user
+    Set<AttributeDelta> attributes = new HashSet<>();
+    attributes.add(
+        new AttributeDeltaBuilder()
+            .setName(GROUP_IDS.name())
+            .addValueToRemove(existingGroupId)
+            .build());
+    Set<AttributeDelta> response =
+        getConnectorFacade()
+            .updateDelta(
+                ObjectClass.ACCOUNT,
+                new Uid(existingUserId),
+                attributes,
+                new OperationOptionsBuilder().build());
+    assertNotNull(response);
+    assertTrue(response.isEmpty());
+  }
+
+  @Test
+  @Order(155)
+  public void test155UserGetVerifyGroupRemoved() {
+    Attribute idAttribute =
+        new AttributeBuilder().setName(Uid.NAME).addValue(existingUserId).build();
+
+    results = new ArrayList<>();
+    getConnectorFacade()
+        .search(
+            ObjectClass.ACCOUNT,
+            new EqualsFilter(idAttribute),
+            handler,
+            new OperationOptionsBuilder().build());
+    assertEquals(1, results.size());
+    assertTrue(
+        StringUtils.isNotBlank(
+            results.get(0).getAttributeByName(USER_ID.name()).getValue().get(0).toString()));
+    assertTrue(
+        StringUtils.startsWithIgnoreCase(
+            "Jimmy",
+            results.get(0).getAttributeByName(FIRST_NAME.name()).getValue().get(0).toString()));
+    assertTrue(
+        StringUtils.equalsIgnoreCase(
+            newName,
+            results.get(0).getAttributeByName(LAST_NAME.name()).getValue().get(0).toString()));
+    assertTrue(results.get(0).getAttributeByName(GROUP_IDS.name()).getValue().isEmpty());
+  }
+
+  @Test
+  @Order(160)
+  public void test160UserModifyDisableUser() {
+    // modify the existing user
+    Set<AttributeDelta> attributes = new HashSet<>();
+
+    attributes.add(
+        new AttributeDeltaBuilder().setName(__ENABLE__.name()).addValueToReplace(false).build());
+    Set<AttributeDelta> response =
+        getConnectorFacade()
+            .updateDelta(
+                ObjectClass.ACCOUNT,
+                new Uid(existingUserId),
+                attributes,
+                new OperationOptionsBuilder().build());
+    assertNotNull(response);
+    assertTrue(response.isEmpty());
+  }
+
+  @Test
+  @Order(162)
+  public void test162UserGetVerifyUserDisabled() {
+    Attribute idAttribute =
+        new AttributeBuilder().setName(Uid.NAME).addValue(existingUserId).build();
+
+    results = new ArrayList<>();
+    getConnectorFacade()
+        .search(
+            ObjectClass.ACCOUNT,
+            new EqualsFilter(idAttribute),
+            handler,
+            new OperationOptionsBuilder().build());
+    assertEquals(1, results.size());
+    assertTrue(
+        StringUtils.isNotBlank(
+            results.get(0).getAttributeByName(USER_ID.name()).getValue().get(0).toString()));
+    assertTrue(
+        StringUtils.startsWithIgnoreCase(
+            "Jimmy",
+            results.get(0).getAttributeByName(FIRST_NAME.name()).getValue().get(0).toString()));
+    assertTrue(
+        StringUtils.equalsIgnoreCase(
+            newName,
+            results.get(0).getAttributeByName(LAST_NAME.name()).getValue().get(0).toString()));
+    assertTrue(
+        StringUtils.equalsIgnoreCase(
+            "inactive",
+            results.get(0).getAttributeByName(STATUS.name()).getValue().get(0).toString()));
+  }
+
+  @Test
+  @Order(164)
+  public void test164UserModifyEnableUser() {
+    // modify the existing user
+    Set<AttributeDelta> attributes = new HashSet<>();
+
+    attributes.add(
+        new AttributeDeltaBuilder().setName(__ENABLE__.name()).addValueToReplace(true).build());
+    Set<AttributeDelta> response =
+        getConnectorFacade()
+            .updateDelta(
+                ObjectClass.ACCOUNT,
+                new Uid(existingUserId),
+                attributes,
+                new OperationOptionsBuilder().build());
+    assertNotNull(response);
+    assertTrue(response.isEmpty());
+  }
+
+  @Test
+  @Order(166)
+  public void test166UserGetVerifyUserEnabled() {
+    Attribute idAttribute =
+        new AttributeBuilder().setName(Uid.NAME).addValue(existingUserId).build();
+
+    results = new ArrayList<>();
+    getConnectorFacade()
+        .search(
+            ObjectClass.ACCOUNT,
+            new EqualsFilter(idAttribute),
+            handler,
+            new OperationOptionsBuilder().build());
+    assertEquals(1, results.size());
+    assertTrue(
+        StringUtils.isNotBlank(
+            results.get(0).getAttributeByName(USER_ID.name()).getValue().get(0).toString()));
+    assertTrue(
+        StringUtils.startsWithIgnoreCase(
+            "Jimmy",
+            results.get(0).getAttributeByName(FIRST_NAME.name()).getValue().get(0).toString()));
+    assertTrue(
+        StringUtils.equalsIgnoreCase(
+            newName,
+            results.get(0).getAttributeByName(LAST_NAME.name()).getValue().get(0).toString()));
+    assertTrue(
+        StringUtils.equalsIgnoreCase(
+            "active",
+            results.get(0).getAttributeByName(STATUS.name()).getValue().get(0).toString()));
   }
 
   @Test
@@ -264,6 +432,12 @@ public class ZoomConnectorApiIntegrationTest
             handler,
             new OperationOptionsBuilder().build());
     assertFalse(results.isEmpty());
+    assertTrue(
+        StringUtils.isNotBlank(
+            results.get(0).getAttributeByName(GROUP_ID.name()).getValue().get(0).toString()));
+    assertTrue(
+        StringUtils.isNotBlank(
+            results.get(0).getAttributeByName(GROUP_NAME.name()).getValue().get(0).toString()));
   }
 
   @Test

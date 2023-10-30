@@ -47,12 +47,14 @@ def versionNumber = "${project_version}"
 dependencies {
 
     // Required for MidPoint runtime
-    runtimeOnly 'org.codehaus.groovy:groovy:2.5.2'
+    runtimeOnly 'org.codehaus.groovy:groovy:2.5.21'
     runtimeOnly 'com.evolveum.polygon:connector-common:1.5.0.0'
 
     // HTTP/RESTful support
-    implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'org.apache.httpcomponents:httpclient:4.5.10'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+
+    implementation 'commons-codec:commons-codec:1.15'
 
     implementation "com.exclamationlabs.connid:connector-base:${base_connector_version}-+"
 

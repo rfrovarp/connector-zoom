@@ -1,6 +1,7 @@
 # connector-zoom
 
 ## Change Log
++ **4.1.3** - Snyk vulnerabilities update FIN-11094 (10/30/2023)
 + **4.1.2** - Resolve user and group update issues FIN-10857 (08/02/2023)
 + **4.1.1** - Deactivate support - do not request `pending` users FIN-10620 (07/05/2023)
 + **4.1.0** - Add deactivate support FIN-10620 (06/08/2023)

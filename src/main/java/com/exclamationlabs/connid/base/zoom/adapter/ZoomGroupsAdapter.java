@@ -24,9 +24,7 @@ import com.exclamationlabs.connid.base.zoom.configuration.ZoomConfiguration;
 import com.exclamationlabs.connid.base.zoom.model.ZoomGroup;
 import java.util.HashSet;
 import java.util.Set;
-import org.identityconnectors.framework.common.objects.Attribute;
-import org.identityconnectors.framework.common.objects.AttributeBuilder;
-import org.identityconnectors.framework.common.objects.ObjectClass;
+import org.identityconnectors.framework.common.objects.*;
 
 public class ZoomGroupsAdapter extends BaseAdapter<ZoomGroup, ZoomConfiguration> {
 
@@ -43,8 +41,8 @@ public class ZoomGroupsAdapter extends BaseAdapter<ZoomGroup, ZoomConfiguration>
   @Override
   public Set<ConnectorAttribute> getConnectorAttributes() {
     Set<ConnectorAttribute> result = new HashSet<>();
-    result.add(new ConnectorAttribute(GROUP_ID.name(), STRING, NOT_UPDATEABLE));
-    result.add(new ConnectorAttribute(GROUP_NAME.name(), STRING, NOT_UPDATEABLE));
+    result.add(new ConnectorAttribute(Uid.NAME, GROUP_ID.name(), STRING, NOT_UPDATEABLE));
+    result.add(new ConnectorAttribute(Name.NAME, GROUP_NAME.name(), STRING, NOT_UPDATEABLE));
     result.add(new ConnectorAttribute(TOTAL_MEMBERS.name(), INTEGER, NOT_UPDATEABLE));
     return result;
   }
@@ -68,9 +66,6 @@ public class ZoomGroupsAdapter extends BaseAdapter<ZoomGroup, ZoomConfiguration>
   @Override
   protected Set<Attribute> constructAttributes(ZoomGroup group) {
     Set<Attribute> attributes = new HashSet<>();
-
-    attributes.add(AttributeBuilder.build(GROUP_ID.name(), group.getId()));
-    attributes.add(AttributeBuilder.build(GROUP_NAME.name(), group.getName()));
     attributes.add(AttributeBuilder.build(TOTAL_MEMBERS.name(), group.getTotalMembers()));
 
     return attributes;

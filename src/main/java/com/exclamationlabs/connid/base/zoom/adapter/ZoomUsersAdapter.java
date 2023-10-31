@@ -42,10 +42,10 @@ public class ZoomUsersAdapter extends BaseAdapter<ZoomUser, ZoomConfiguration> {
   @Override
   public Set<ConnectorAttribute> getConnectorAttributes() {
     Set<ConnectorAttribute> result = new HashSet<>();
-    result.add(new ConnectorAttribute(USER_ID.name(), STRING, NOT_UPDATEABLE));
+    result.add(new ConnectorAttribute(Uid.NAME, USER_ID.name(), STRING, NOT_UPDATEABLE, REQUIRED));
     result.add(new ConnectorAttribute(FIRST_NAME.name(), STRING));
     result.add(new ConnectorAttribute(LAST_NAME.name(), STRING));
-    result.add(new ConnectorAttribute(EMAIL.name(), STRING));
+    result.add(new ConnectorAttribute(Name.NAME, EMAIL.name(), STRING, REQUIRED));
 
     result.add(new ConnectorAttribute(PASSWORD.name(), STRING, NOT_UPDATEABLE));
     result.add(new ConnectorAttribute(LANGUAGE.name(), STRING));
@@ -118,8 +118,6 @@ public class ZoomUsersAdapter extends BaseAdapter<ZoomUser, ZoomConfiguration> {
   protected Set<Attribute> constructAttributes(ZoomUser user) {
     Set<Attribute> attributes = new HashSet<>();
 
-    attributes.add(AttributeBuilder.build(USER_ID.name(), user.getId()));
-    attributes.add(AttributeBuilder.build(EMAIL.name(), user.getEmail()));
     attributes.add(AttributeBuilder.build(FIRST_NAME.name(), user.getFirstName()));
     attributes.add(AttributeBuilder.build(LAST_NAME.name(), user.getLastName()));
     attributes.add(AttributeBuilder.build(LANGUAGE.name(), user.getLanguage()));

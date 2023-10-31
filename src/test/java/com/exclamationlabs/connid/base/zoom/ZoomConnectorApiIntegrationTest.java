@@ -165,12 +165,8 @@ public class ZoomConnectorApiIntegrationTest
     getConnectorFacade()
         .search(ObjectClass.ACCOUNT, null, handler, new OperationOptionsBuilder().build());
     assertTrue(results.size() >= 1);
-    assertTrue(
-        StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(USER_ID.name()).getValue().get(0).toString()));
-    assertTrue(
-        StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(EMAIL.name()).getValue().get(0).toString()));
+    assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getUidValue()));
+    assertTrue(StringUtils.isNotBlank(results.get(0).getName().getNameValue()));
   }
 
   @Test
@@ -186,12 +182,8 @@ public class ZoomConnectorApiIntegrationTest
             handler,
             new OperationOptionsBuilder().setPageSize(3).setPagedResultsOffset(1).build());
     assertEquals(3, results.size());
-    assertTrue(
-        StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(USER_ID.name()).getValue().get(0).toString()));
-    assertTrue(
-        StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(EMAIL.name()).getValue().get(0).toString()));
+    assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getUidValue()));
+    assertTrue(StringUtils.isNotBlank(results.get(0).getName().getNameValue()));
   }
 
   @Test
@@ -208,9 +200,7 @@ public class ZoomConnectorApiIntegrationTest
             handler,
             new OperationOptionsBuilder().build());
     assertEquals(1, results.size());
-    assertTrue(
-        StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(USER_ID.name()).getValue().get(0).toString()));
+    assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
     assertTrue(
         StringUtils.startsWithIgnoreCase(
             "Jimmy",
@@ -260,9 +250,7 @@ public class ZoomConnectorApiIntegrationTest
             handler,
             new OperationOptionsBuilder().build());
     assertEquals(1, results.size());
-    assertTrue(
-        StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(USER_ID.name()).getValue().get(0).toString()));
+    assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
     assertTrue(
         StringUtils.startsWithIgnoreCase(
             "Jimmy",
@@ -307,9 +295,7 @@ public class ZoomConnectorApiIntegrationTest
             handler,
             new OperationOptionsBuilder().build());
     assertEquals(1, results.size());
-    assertTrue(
-        StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(USER_ID.name()).getValue().get(0).toString()));
+    assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
     assertTrue(
         StringUtils.startsWithIgnoreCase(
             "Jimmy",
@@ -357,9 +343,7 @@ public class ZoomConnectorApiIntegrationTest
             handler,
             new OperationOptionsBuilder().build());
     assertEquals(1, results.size());
-    assertTrue(
-        StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(USER_ID.name()).getValue().get(0).toString()));
+    assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
     assertTrue(
         StringUtils.startsWithIgnoreCase(
             "Jimmy",
@@ -411,12 +395,8 @@ public class ZoomConnectorApiIntegrationTest
     getConnectorFacade()
         .search(ObjectClass.GROUP, null, handler, new OperationOptionsBuilder().build());
     assertFalse(results.isEmpty());
-    assertTrue(
-        StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(GROUP_ID.name()).getValue().get(0).toString()));
-    assertTrue(
-        StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(GROUP_NAME.name()).getValue().get(0).toString()));
+    assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
+    assertTrue(StringUtils.isNotBlank(results.get(0).getName().getValue().get(0).toString()));
   }
 
   @Test
@@ -432,12 +412,8 @@ public class ZoomConnectorApiIntegrationTest
             handler,
             new OperationOptionsBuilder().build());
     assertFalse(results.isEmpty());
-    assertTrue(
-        StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(GROUP_ID.name()).getValue().get(0).toString()));
-    assertTrue(
-        StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(GROUP_NAME.name()).getValue().get(0).toString()));
+    assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
+    assertTrue(StringUtils.isNotBlank(results.get(0).getName().getValue().get(0).toString()));
   }
 
   @Test

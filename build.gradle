@@ -16,6 +16,7 @@ plugins {
     id 'maven-publish'
     id 'com.google.cloud.artifactregistry.gradle-plugin' version '2.2.0'
     id 'com.github.sherter.google-java-format' version '0.9'
+    id 'idea'
 }
 
 repositories {
@@ -32,6 +33,12 @@ googleJavaFormat {
     exclude 'generatedConfig/**/*.java'
 }
 
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
 apply plugin: 'com.exclamationlabs.connid.base.config.plugin'
 
 sourceCompatibility = '1.8'

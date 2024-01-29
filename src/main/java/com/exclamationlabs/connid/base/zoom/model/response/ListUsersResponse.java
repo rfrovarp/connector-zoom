@@ -18,44 +18,43 @@ package com.exclamationlabs.connid.base.zoom.model.response;
 
 import com.exclamationlabs.connid.base.zoom.model.ZoomUser;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.Set;
 
 public class ListUsersResponse {
   @SerializedName("next_page_token")
   private String nextPageToken;
+
   @SerializedName("page_count")
   private Integer pageCount;
+
   @SerializedName("page_number")
   private Integer pageNumber;
+
   @SerializedName("page_size")
   private Integer pageSize;
+
   @SerializedName("total_records")
   private Integer totalRecords;
+
   private Set<ZoomUser> users;
 
-  public String getNextPageToken()
-  {
+  public String getNextPageToken() {
     return nextPageToken;
   }
 
-  public Integer getPageCount()
-  {
+  public Integer getPageCount() {
     return pageCount;
   }
 
-  public Integer getPageNumber()
-  {
+  public Integer getPageNumber() {
     return pageNumber;
   }
 
-  public Integer getPageSize()
-  {
+  public Integer getPageSize() {
     return pageSize;
   }
 
-  public Integer getTotalRecords()
-  {
+  public Integer getTotalRecords() {
     return totalRecords;
   }
 
@@ -63,28 +62,23 @@ public class ListUsersResponse {
     return users;
   }
 
-  public void setNextPageToken(String nextPageToken)
-  {
+  public void setNextPageToken(String nextPageToken) {
     this.nextPageToken = nextPageToken;
   }
 
-  public void setPageCount(Integer pageCount)
-  {
+  public void setPageCount(Integer pageCount) {
     this.pageCount = pageCount;
   }
 
-  public void setPageNumber(Integer pageNumber)
-  {
+  public void setPageNumber(Integer pageNumber) {
     this.pageNumber = pageNumber;
   }
 
-  public void setPageSize(Integer pageSize)
-  {
+  public void setPageSize(Integer pageSize) {
     this.pageSize = pageSize;
   }
 
-  public void setTotalRecords(Integer totalRecords)
-  {
+  public void setTotalRecords(Integer totalRecords) {
     this.totalRecords = totalRecords;
   }
 

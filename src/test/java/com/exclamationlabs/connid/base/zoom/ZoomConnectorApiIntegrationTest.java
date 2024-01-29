@@ -84,14 +84,16 @@ public class ZoomConnectorApiIntegrationTest
   public void test110UserCreate() {
     // Create a 'pending' user that will be deleted at the end
     String firstName = "Jimmy";
-    String lastName  = "Stuart";
-    String email     = "sfox+" + firstName + lastName + "@exclamationlabs.com";
+    String lastName = "Stuart";
+    String email = "sfox+" + firstName + lastName + "@exclamationlabs.com";
     Set<Attribute> attributes = new HashSet<>();
     attributes.add(new AttributeBuilder().setName(FIRST_NAME.name()).addValue(firstName).build());
     attributes.add(new AttributeBuilder().setName(LAST_NAME.name()).addValue(lastName).build());
     attributes.add(new AttributeBuilder().setName(TYPE.name()).addValue(UserType.BASIC).build());
     attributes.add(new AttributeBuilder().setName(EMAIL.name()).addValue(email).build());
-    Uid newId = getConnectorFacade().create(ObjectClass.ACCOUNT, attributes, new OperationOptionsBuilder().build());
+    Uid newId =
+        getConnectorFacade()
+            .create(ObjectClass.ACCOUNT, attributes, new OperationOptionsBuilder().build());
     assertNotNull(newId);
     assertNotNull(newId.getUidValue());
     generatedUserId = newId.getUidValue();
@@ -134,12 +136,22 @@ public class ZoomConnectorApiIntegrationTest
   public void test120UserModify() {
     // modify the existing user
     Set<AttributeDelta> attributes = new HashSet<>();
-    attributes.add(new AttributeDeltaBuilder().setName(LANGUAGE.name()).addValueToReplace("en-US").build());
-    attributes.add(new AttributeDeltaBuilder().setName(TIME_ZONE.name()).addValueToReplace("UTC").build());
-    attributes.add(new AttributeDeltaBuilder().setName(GROUP_IDS.name()).addValueToAdd(existingGroupId).build());
+    attributes.add(
+        new AttributeDeltaBuilder().setName(LANGUAGE.name()).addValueToReplace("en-US").build());
+    attributes.add(
+        new AttributeDeltaBuilder().setName(TIME_ZONE.name()).addValueToReplace("UTC").build());
+    attributes.add(
+        new AttributeDeltaBuilder()
+            .setName(GROUP_IDS.name())
+            .addValueToAdd(existingGroupId)
+            .build());
     Set<AttributeDelta> response =
         getConnectorFacade()
-            .updateDelta(ObjectClass.ACCOUNT, new Uid(existingUserId), attributes, new OperationOptionsBuilder().build());
+            .updateDelta(
+                ObjectClass.ACCOUNT,
+                new Uid(existingUserId),
+                attributes,
+                new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
@@ -162,7 +174,10 @@ public class ZoomConnectorApiIntegrationTest
   public void test131UsersGetWithPaging() {
     results = new ArrayList<>();
     getConnectorFacade()
-        .search(ObjectClass.ACCOUNT, null, handler,
+        .search(
+            ObjectClass.ACCOUNT,
+            null,
+            handler,
             new OperationOptionsBuilder().setPageSize(9).setPagedResultsOffset(10).build());
     assertTrue(results.size() >= 1);
     assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getUidValue()));
@@ -239,9 +254,15 @@ public class ZoomConnectorApiIntegrationTest
     // modify the existing user
     Set<AttributeDelta> attributes = new HashSet<>();
 
-    attributes.add(new AttributeDeltaBuilder().setName(__ENABLE__.name()).addValueToReplace(false).build());
+    attributes.add(
+        new AttributeDeltaBuilder().setName(__ENABLE__.name()).addValueToReplace(false).build());
     Set<AttributeDelta> response =
-        getConnectorFacade().updateDelta(ObjectClass.ACCOUNT,new Uid(existingUserId),attributes,new OperationOptionsBuilder().build());
+        getConnectorFacade()
+            .updateDelta(
+                ObjectClass.ACCOUNT,
+                new Uid(existingUserId),
+                attributes,
+                new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
@@ -341,7 +362,8 @@ public class ZoomConnectorApiIntegrationTest
   @Order(230)
   public void test230GroupsGet() {
     results = new ArrayList<>();
-    getConnectorFacade().search(ObjectClass.GROUP, null, handler, new OperationOptionsBuilder().build());
+    getConnectorFacade()
+        .search(ObjectClass.GROUP, null, handler, new OperationOptionsBuilder().build());
     assertFalse(results.isEmpty());
     assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
     assertTrue(StringUtils.isNotBlank(results.get(0).getName().getValue().get(0).toString()));

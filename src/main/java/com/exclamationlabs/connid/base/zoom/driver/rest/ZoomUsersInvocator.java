@@ -31,9 +31,11 @@ import com.exclamationlabs.connid.base.zoom.model.response.ListUsersResponse;
 import java.util.*;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser> {
+  private static final Log LOG = Log.getLog(ZoomUsersInvocator.class);
 
   @Override
   public String create(ZoomDriver zoomDriver, ZoomUser zoomUser) throws ConnectorException {
@@ -58,6 +60,7 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
   @Override
   public void update(ZoomDriver zoomDriver, String userId, ZoomUser userModel)
       throws ConnectorException {
+
     boolean deactivateOnly = StringUtils.equalsIgnoreCase(userModel.getStatus(), "inactive");
     updateUserStatus(zoomDriver, userModel.getStatus(), userId);
 
@@ -79,17 +82,35 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
   }
 
   @Override
-  public void delete(ZoomDriver zoomDriver, String userId) throws ConnectorException {
-    if (BooleanUtils.isTrue(zoomDriver.getConfiguration().getUserDeactivationEnabled())) {
-      updateUserStatus(zoomDriver, "inactive", userId);
+  public void delete(ZoomDriver driver, String userId) throws ConnectorException {
+    RestRequest req=null;
+    ZoomUser user = getOne(driver, userId, null);
+    if (driver.getConfiguration().getDeactivateOnDelete())
+    {
+      if ( user.getStatus().equalsIgnoreCase("pending"))
+      {
+        LOG.warn("Cannot DeActivate Pending user id=" + userId);
+        updateUserStatus(driver, "inactive", userId);
+      }
+      else if (user.getStatus().equalsIgnoreCase("inactive"))
+      {
+        LOG.warn("User Already inactive: id=" + userId);
+      }
+      else {
+        updateUserStatus(driver, "inactive", userId);
+      }
+
+    } else if ( driver.getConfiguration().getDisassociateOnDelete())    {
+
+      new RestRequest.Builder<>(Void.class).withDelete().withRequestUri("/users/"+userId).build();
+      driver.executeRequest(req);
     } else {
-      zoomDriver.executeRequest(
-          new RestRequest.Builder<>(Void.class)
-              .withDelete()
-              .withRequestUri("/users/" + userId)
-              .build());
+      String uri = "/users/" + userId +"?action=delete";
+      req=new RestRequest.Builder<>(Void.class).withDelete().withRequestUri(uri).build();
+      driver.executeRequest(req);
     }
   }
+
 
   @Override
   public Set<ZoomUser> getAll(

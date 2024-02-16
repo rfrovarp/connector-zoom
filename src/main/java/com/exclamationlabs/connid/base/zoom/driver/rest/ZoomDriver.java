@@ -16,6 +16,7 @@ package com.exclamationlabs.connid.base.zoom.driver.rest;
 import com.exclamationlabs.connid.base.connector.driver.rest.BaseRestDriver;
 import com.exclamationlabs.connid.base.connector.driver.rest.RestFaultProcessor;
 import com.exclamationlabs.connid.base.connector.driver.rest.RestRequest;
+import com.exclamationlabs.connid.base.connector.logging.Logger;
 import com.exclamationlabs.connid.base.zoom.configuration.ZoomConfiguration;
 import com.exclamationlabs.connid.base.zoom.model.ZoomGroup;
 import com.exclamationlabs.connid.base.zoom.model.ZoomUser;
@@ -47,6 +48,7 @@ public class ZoomDriver extends BaseRestDriver<ZoomConfiguration> {
   @Override
   public void test() throws ConnectorException {
     try {
+      Logger.info(this, "Performing Test Procedure");
       ZoomUser adminUser =
           executeRequest(
                   new RestRequest.Builder<>(ZoomUser.class)

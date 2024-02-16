@@ -20,13 +20,25 @@ custom:
     optional:
       userDeactivationEnabled:
         type: boolean
-        order: 702
+        order: 3010
         default: 'false'
-        display: 'User Deactivation Enabled'
+        display: 'Deactivate On Delete Enabled'
         help: 'If true, a request to delete a Zoom user will instead deactivate the user on Zoom.'
+      deactivateOnDelete:
+          type: boolean
+          order: 3020
+          default: 'true'
+          display: 'Deactivate On Delete'
+          help: 'If true, a request to delete a Zoom user will instead deactivate the user on Zoom.'
+      disassociateOnDelete:
+        type: boolean
+        order: 3030
+        default: 'false'
+        display: 'Disassociate On Delete'
+        help: 'If true, a request to delete a Zoom user will instead disassociate the users email into an independent Zoom Account.'
       immediateLogoutOnDeactivate:
         type: boolean
-        order: 703
+        order: 3040
         default: 'false'
         display: 'Immediate Logout on Deactivate'
         help: 'If true, a SSO logout via Zoom API will also be executed when a user is deactivated.'

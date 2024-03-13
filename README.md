@@ -48,6 +48,21 @@ as documented here: <https://marketplace.zoom.us/docs/guides/build/server-to-ser
 Once this is all done, you can manage Users and Groups in Zoom's web UI by going to
 <https://zoom.us/meeting> and using the Admin -> User Management links.
 
+### Required OAuth Zoom Application Scopes
+
+The following OAuth Scopes will be required in the server to service OAuth Application in order to use this connector 
+
++ group:master
++ group:read:admin,
++ group:write:admin
++ phone:master
+  phone:read:admin
+  phone:write:admin
++ user:master
++ user:read:admin
++ user:write:admin
+
+
 ## Midpoint configuration
 
 See XML files in src/test/resources folder for Midpoint examples.  resourceOverlay.xml is an example

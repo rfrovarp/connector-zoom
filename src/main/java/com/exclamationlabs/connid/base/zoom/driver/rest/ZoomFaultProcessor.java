@@ -15,7 +15,6 @@ package com.exclamationlabs.connid.base.zoom.driver.rest;
 
 import static com.exclamationlabs.connid.base.zoom.model.response.fault.ErrorResponseCode.*;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.exclamationlabs.connid.base.connector.driver.exception.DriverRenewableTokenExpiredException;
 import com.exclamationlabs.connid.base.connector.driver.rest.RestFaultProcessor;
 import com.exclamationlabs.connid.base.connector.logging.Logger;
@@ -80,7 +79,7 @@ public class ZoomFaultProcessor implements RestFaultProcessor {
                   + "; Message: "
                   + faultData.getMessage());
         } else {
-          Logger.warn(this, faultData.getMessage());
+          // Logger.warn(this, faultData.getMessage());
           return;
         }
       }
@@ -100,34 +99,35 @@ public class ZoomFaultProcessor implements RestFaultProcessor {
         return false;
 
       case GROUP_NAME_ALREADY_EXISTS:
-      case USER_ALREADY_EXISTS:
         throw new AlreadyExistsException(
             "Supplied User/Group already exists. Please enter different input.");
+      case USER_ALREADY_EXISTS:
+        return false;
 
       case VALIDATION_FAILED:
         throw new InvalidAttributeValueException(
             "Validation Failed. " + faultData.getErrorDetails());
       case TOKEN_EXPIRED:
-        throw new DriverRenewableTokenExpiredException(String.valueOf(faultData.getCode()) + " "+ faultData.getMessage());
+        throw new DriverRenewableTokenExpiredException(
+            String.valueOf(faultData.getCode()) + " " + faultData.getMessage());
     }
     return true;
   }
+
   private Boolean checkRecognizedFaultMessages(ErrorResponse faultData) {
-    if (faultData != null && faultData.getMessage() != null && (!faultData.getMessage().isEmpty()))
-    {
+    if (faultData != null
+        && faultData.getMessage() != null
+        && (!faultData.getMessage().isEmpty())) {
       String message = faultData.getMessage();
-      if ( message.contains("User does not exist") )
-      {
+      if (message.contains("User does not exist")) {
         Logger.info(this, message);
         return true;
-      }
-      else
-      {
+      } else {
         Logger.error(this, message);
-        throw new ConnectorException("Unhandled Exception Received from Zoom.  Message: " + faultData.getMessage());
+        throw new ConnectorException(
+            "Unhandled Exception Received from Zoom.  Message: " + faultData.getMessage());
       }
     }
     return false;
   }
-
 }

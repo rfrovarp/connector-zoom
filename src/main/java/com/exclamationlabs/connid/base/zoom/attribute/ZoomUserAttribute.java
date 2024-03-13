@@ -17,6 +17,7 @@
 package com.exclamationlabs.connid.base.zoom.attribute;
 
 public enum ZoomUserAttribute {
+  CREATE_ACTION,
   USER_ID,
   FIRST_NAME,
   LAST_NAME,
@@ -25,6 +26,7 @@ public enum ZoomUserAttribute {
   LANGUAGE,
   TIME_ZONE,
   PHONE_NUMBER,
+  PHONE_COUNTRY,
   STATUS,
   __ENABLE__,
   TYPE,
@@ -32,5 +34,17 @@ public enum ZoomUserAttribute {
   LAST_LOGIN_TIME,
   VERIFIED,
   PERSONAL_MEETING_ID,
-  GROUP_IDS
+  GROUP_IDS,
+  ZOOM_PHONE_FEATURE,
+  ZOOM_PHONE_NUMBERS,
+  ZOOM_PHONE_CALLING_PLANS,
+  ZOOM_PHONE_STATUS,
+  ZOOM_ONE_FEATURE_TYPE,
+
+  SITE_ID,
+  SITE_NAME,
+  SITE_CODE,
+  EXTENSION_NUMBER,
+  CALLING_PLAN,
+  SMS_ENABLED
 }

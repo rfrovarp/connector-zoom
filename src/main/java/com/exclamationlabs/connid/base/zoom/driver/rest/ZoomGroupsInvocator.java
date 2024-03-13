@@ -106,7 +106,7 @@ public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGrou
                       .withRequestUri("/groups")
                       .build())
               .getResponseObject();
-      if ( paginator.hasPagination() ) {
+      if (paginator.hasPagination()) {
         paginator.setNoMoreResults(true);
       }
       return response.getGroups();
@@ -141,27 +141,25 @@ public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGrou
   }
 
   /**
-   * @param driver          Driver belonging to this Invocator and providing interaction with the applicable
-   *                        destination system.
-   * @param name            String holding the identifier for the object being sought on the destination
-   *                        system.
+   * @param driver Driver belonging to this Invocator and providing interaction with the applicable
+   *     destination system.
+   * @param name String holding the identifier for the object being sought on the destination
+   *     system.
    * @param prefetchDataMap Map of prefetch data applicable to the Identity Model and that may be
-   *                        understood by the invocator.
+   *     understood by the invocator.
    * @return A ZoomGroup object with the name specified
    * @throws ConnectorException
    */
   @Override
   public ZoomGroup getOneByName(ZoomDriver driver, String name, Map<String, Object> prefetchDataMap)
-          throws ConnectorException  {
+      throws ConnectorException {
     ZoomGroup item = null;
     Set<ZoomGroup> groups = getAll(driver, null, new ResultsPaginator(), null);
-    if ( groups != null && groups.size() >0 )
-    {
-      for (ZoomGroup group: groups )
-      {
-        if ( name != null
-                && group.getName() != null
-                && group.getName().trim().equalsIgnoreCase(name.trim())) {
+    if (groups != null && groups.size() > 0) {
+      for (ZoomGroup group : groups) {
+        if (name != null
+            && group.getName() != null
+            && group.getName().trim().equalsIgnoreCase(name.trim())) {
           item = getOne(driver, group.getId(), prefetchDataMap);
         }
       }

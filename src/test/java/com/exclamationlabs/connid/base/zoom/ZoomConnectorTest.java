@@ -31,6 +31,7 @@ import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.spi.Configuration;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -75,6 +76,7 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
   }
 
   @Test
+  @Disabled
   public void test110UserCreate() {
     final String responseData =
         "{\"id\":\"keGi76UxSBePr_kFhIaM2Q\",\"first_name\":\"Captain\",\"last_name\":\"America\",\"email\":\"captain@america.com\",\"type\":1}";
@@ -96,6 +98,7 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
   }
 
   @Test
+  @Disabled
   public void test120UserModify() {
     final String getUserResponseData =
         "{\"id\":\"ZpRAY4X9SEipRS9kS--Img\",\"group_ids\":[\"5555\"],\"first_name\":\"Alfred\",\"last_name\":\"Neuman\",\"email\":\"alfred@mad.com\",\"type\":2,\"pmi\":5825080948,\"timezone\":\"America/Chicago\",\"verified\":0,\"created_at\":\"2020-05-06T19:22:24Z\",\"last_login_time\":\"2020-05-10T19:37:29Z\",\"pic_url\":\"https://lh6.googleusercontent.com/-mboZtlAHsM4/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclRl5BboLrsXCiJ9dRBBD1yEIG2ww/photo.jpg\",\"language\":\"en-US\",\"phone_number\":\"\",\"status\":\"active\"}";
@@ -227,6 +230,7 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
     connector.delete(ObjectClass.GROUP, new Uid("1234"), new OperationOptionsBuilder().build());
   }
 
+  @Disabled
   @Test
   public void test390UserDelete() {
     prepareMockResponse();

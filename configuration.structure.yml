@@ -18,12 +18,6 @@ custom:
         display: 'Zoom Account Id'
         help: 'Zoom Account Id required for authentication.'
     optional:
-      userDeactivationEnabled:
-        type: boolean
-        order: 3010
-        default: 'false'
-        display: 'Deactivate On Delete Enabled'
-        help: 'If true, a request to delete a Zoom user will instead deactivate the user on Zoom.'
       deactivateOnDelete:
           type: boolean
           order: 3020

@@ -18,11 +18,11 @@ package com.exclamationlabs.connid.base.zoom.model.response;
 
 import com.exclamationlabs.connid.base.zoom.model.ZoomGroup;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.Set;
 
 public class ListGroupsResponse {
   private Set<ZoomGroup> groups;
+
   @SerializedName("total_records")
   private Integer totalRecords;
 

@@ -22,165 +22,79 @@ import java.util.Set;
 
 public class ZoomUser implements IdentityModel {
 
-  private String id;
+  @SerializedName("created_at")
+  private String createdAt;
+
+  private String email;
+  private ZoomFeature feature;
 
   @SerializedName("first_name")
   private String firstName;
+
+  @SerializedName("group_ids")
+  private Set<String> groupIds;
+
+  private transient Set<String> groupsToAdd;
+  private transient Set<String> groupsToRemove;
+  private String id;
+  private transient ZoomPhoneUserProfile outboundAdd;
+  private transient ZoomPhoneUserProfile outboundRemove;
+  private String language;
+
+  @SerializedName("last_login_time")
+  private String lastLoginTime;
 
   @SerializedName("last_name")
   private String lastName;
 
   private String password;
 
-  private String email;
+  @SerializedName("pmi")
+  private Long personalMeetingId;
 
-  private String timezone;
-
-  private String language;
+  @SerializedName("phone_country")
+  private String phoneCountry;
 
   @SerializedName("phone_number")
   private String phoneNumber;
 
+  private transient ZoomPhoneUserProfile phoneProfile;
+  private transient ZoomPhoneSite site;
   private String status;
-
-  @SerializedName("created_at")
-  private String createdAt;
-
-  @SerializedName("last_login_time")
-  private String lastLoginTime;
-
+  private String timezone;
+  private Integer type;
   private String verified;
 
-  @SerializedName("pmi")
-  private Long personalMeetingId;
-
-  private Integer type;
-
-  @SerializedName("group_ids")
-  private Set<String> groupIds;
-
-  private transient Set<String> groupsToAdd;
-
-  private transient Set<String> groupsToRemove;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public String getFirstName() {
-    return firstName;
-  }
-
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
-
-  public String getLastName() {
-    return lastName;
-  }
-
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
+  public String getCreatedAt() {
+    return createdAt;
   }
 
   public String getEmail() {
     return email;
   }
 
-  public void setEmail(String email) {
-    this.email = email;
+  public ZoomFeature getFeature() {
+    return feature;
   }
 
-  public String getTimezone() {
-    return timezone;
-  }
-
-  public void setTimezone(String timezone) {
-    this.timezone = timezone;
-  }
-
-  public String getLanguage() {
-    return language;
-  }
-
-  public void setLanguage(String language) {
-    this.language = language;
-  }
-
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
-  public String getPhoneNumber() {
-    return phoneNumber;
-  }
-
-  public void setPhoneNumber(String phoneNumber) {
-    this.phoneNumber = phoneNumber;
-  }
-
-  public String getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(String createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public String getLastLoginTime() {
-    return lastLoginTime;
-  }
-
-  public void setLastLoginTime(String lastLoginTime) {
-    this.lastLoginTime = lastLoginTime;
-  }
-
-  public String getVerified() {
-    return verified;
-  }
-
-  public void setVerified(String verified) {
-    this.verified = verified;
-  }
-
-  public Long getPersonalMeetingId() {
-    return personalMeetingId;
-  }
-
-  public void setPersonalMeetingId(Long personalMeetingId) {
-    this.personalMeetingId = personalMeetingId;
-  }
-
-  public Integer getType() {
-    return type;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public void setType(Integer type) {
-    this.type = type;
+  public String getFirstName() {
+    return firstName;
   }
 
   public Set<String> getGroupIds() {
     return groupIds;
   }
 
-  public void setGroupIds(Set<String> groupIds) {
-    this.groupIds = groupIds;
+  public Set<String> getGroupsToAdd() {
+    return groupsToAdd;
+  }
+
+  public Set<String> getGroupsToRemove() {
+    return groupsToRemove;
+  }
+
+  public String getId() {
+    return id;
   }
 
   @Override
@@ -193,19 +107,155 @@ public class ZoomUser implements IdentityModel {
     return getEmail();
   }
 
-  public Set<String> getGroupsToAdd() {
-    return groupsToAdd;
+  public ZoomPhoneUserProfile getOutboundAdd() {
+    return outboundAdd;
+  }
+
+  public ZoomPhoneUserProfile getOutboundRemove() {
+    return outboundRemove;
+  }
+
+  public String getLanguage() {
+    return language;
+  }
+
+  public String getLastLoginTime() {
+    return lastLoginTime;
+  }
+
+  public String getLastName() {
+    return lastName;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public Long getPersonalMeetingId() {
+    return personalMeetingId;
+  }
+
+  public String getPhoneCountry() {
+    return phoneCountry;
+  }
+
+  public String getPhoneNumber() {
+    return phoneNumber;
+  }
+
+  public ZoomPhoneUserProfile getPhoneProfile() {
+    return phoneProfile;
+  }
+
+  public ZoomPhoneSite getSite() {
+    return site;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public String getTimezone() {
+    return timezone;
+  }
+
+  public Integer getType() {
+    return type;
+  }
+
+  public String getVerified() {
+    return verified;
+  }
+
+  public void setCreatedAt(String createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public void setFeature(ZoomFeature feature) {
+    this.feature = feature;
+  }
+
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+  public void setGroupIds(Set<String> groupIds) {
+    this.groupIds = groupIds;
   }
 
   public void setGroupsToAdd(Set<String> groupsToAdd) {
     this.groupsToAdd = groupsToAdd;
   }
 
-  public Set<String> getGroupsToRemove() {
-    return groupsToRemove;
-  }
-
   public void setGroupsToRemove(Set<String> groupsToRemove) {
     this.groupsToRemove = groupsToRemove;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public void setOutboundAdd(ZoomPhoneUserProfile outboundAdd) {
+    this.outboundAdd = outboundAdd;
+  }
+
+  public void setOutboundRemove(ZoomPhoneUserProfile outboundRemove) {
+    this.outboundRemove = outboundRemove;
+  }
+
+  public void setLanguage(String language) {
+    this.language = language;
+  }
+
+  public void setLastLoginTime(String lastLoginTime) {
+    this.lastLoginTime = lastLoginTime;
+  }
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public void setPersonalMeetingId(Long personalMeetingId) {
+    this.personalMeetingId = personalMeetingId;
+  }
+
+  public void setPhoneCountry(String phoneCountry) {
+    this.phoneCountry = phoneCountry;
+  }
+
+  public void setPhoneNumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
+  }
+
+  public void setPhoneProfile(ZoomPhoneUserProfile phoneProfile) {
+    this.phoneProfile = phoneProfile;
+  }
+
+  public void setSite(ZoomPhoneSite site) {
+    this.site = site;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public void setTimezone(String timezone) {
+    this.timezone = timezone;
+  }
+
+  public void setType(Integer type) {
+    this.type = type;
+  }
+
+  public void setVerified(String verified) {
+    this.verified = verified;
   }
 }

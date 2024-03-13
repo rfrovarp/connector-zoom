@@ -1,7 +1,7 @@
 # connector-zoom
 
 ## Change Log
-+ **4.1.6** - Support Token Expires
++ **4.2.0** - Added Zoom Phone Support
 + **4.1.5** - Enable Pagination for datasets larger than 300 users NDSU-1 (01/29/2023)
 + **4.1.4** - Fix Uid/Name settings in adapter FIN-11094 (10/31/2023)
 + **4.1.3** - Snyk vulnerabilities update FIN-11094 (10/30/2023)

@@ -1,0 +1,104 @@
+<org xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3" xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3" xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" oid="270f762b-4859-461a-bfc7-2871bcba4804" version="12">
+    <name>Zoom</name>
+    <inducement id="1">
+        <construction>
+            <resourceRef oid="23766c51-e254-4159-8ea0-8e6e7fccd554" relation="org:default" type="c:ResourceType"/>
+            <kind>account</kind>
+            <intent>default</intent>
+            <attribute id="2">
+                <ref>ri:SITE_NAME</ref>
+                <tolerant>false</tolerant>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>$immediateRole/name</path>
+                    </source>
+                    <expression>
+                        <script>
+                            <code>name</code>
+                        </script>
+                    </expression>
+                </outbound>
+            </attribute>
+            <attribute id="3">
+                <ref>ri:SITE_ID</ref>
+                <tolerant>false</tolerant>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>$immediateRole/identifier</path>
+                    </source>
+                    <expression>
+                        <script>
+                            <code>identifier</code>
+                        </script>
+                    </expression>
+                </outbound>
+            </attribute>
+            <attribute id="4">
+                <ref>ri:ZOOM_PHONE_FEATURE</ref>
+                <tolerant>false</tolerant>
+                <outbound>
+                    <strength>strong</strength>
+                    <expression>
+                        <script>
+                            <code>return true</code>
+                        </script>
+                    </expression>
+                </outbound>
+            </attribute>
+        </construction>
+        <orderConstraint id="7">
+            <orderMax>unbounded</orderMax>
+        </orderConstraint>
+        <condition>
+            <expression>
+                <script>
+                    <code>
+                        if(immediateRole.name.orig == 'Fargo' || immediateRole.name.orig == 'Bismarck' || immediateRole.name.orig == 'Dickinson'){
+                        return true
+                        }
+                        return false
+                    </code>
+                </script>
+            </expression>
+        </condition>
+    </inducement>
+    <inducement id="5">
+        <construction>
+            <resourceRef oid="23766c51-e254-4159-8ea0-8e6e7fccd554" relation="org:default" type="c:ResourceType"/>
+            <kind>account</kind>
+            <intent>default</intent>
+            <attribute id="6">
+                <ref>ri:ZOOM_PHONE_CALLING_PLANS</ref>
+                <tolerant>false</tolerant>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>$immediateRole/identifier</path>
+                    </source>
+                    <expression>
+                        <script>
+                            <code>identifier</code>
+                        </script>
+                    </expression>
+                </outbound>
+            </attribute>
+        </construction>
+        <orderConstraint id="8">
+            <orderMax>unbounded</orderMax>
+        </orderConstraint>
+        <condition>
+            <expression>
+                <script>
+                    <code>
+                        if(immediateRole.name.orig == 'US/CA Metered Calling Plan' || immediateRole.name.orig == 'US/CA Unlimited Calling Plan' || immediateRole.name.orig == 'Power Pack'){
+                        return true
+                        }
+                        return false
+                    </code>
+                </script>
+            </expression>
+        </condition>
+    </inducement>
+</org>

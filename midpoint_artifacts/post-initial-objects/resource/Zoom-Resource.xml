@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
+          xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
+          xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
+          xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+          oid="c73e2820-ce6d-48c9-b3bc-4fabe6e9daa0">
+    <name>Target - NDSU Zoom</name>
+    <connectorRef type="c:ConnectorType">
+        <filter>
+            <q:equal>
+                <q:path>c:connectorType</q:path>
+                <q:value>com.exclamationlabs.connid.base.zoom.ZoomConnector</q:value>
+            </q:equal>
+        </filter>
+    </connectorRef>
+
+    <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3">
+        <icfc:configurationProperties xmlns:icfcga="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/connector-zoom/com.exclamationlabs.connid.base.zoom.ZoomConnector">
+            <icfcga:accountId><expression><const>envZoomNDSUAccount</const></expression></icfcga:accountId>
+            <icfcga:deepGet>false</icfcga:deepGet>
+            <icfcga:deepImport>false</icfcga:deepImport>
+            <icfcga:pagination>true</icfcga:pagination>
+            <icfcga:serviceUrl>https://api.zoom.us/v2</icfcga:serviceUrl>
+            <icfcga:tokenUrl>https://zoom.us/oauth/token</icfcga:tokenUrl>
+            <icfcga:clientId><expression><const>envZoomNDSUClient</const></expression></icfcga:clientId>
+            <icfcga:clientSecret><expression><const>envZoomNDSUSecret</const></expression>
+            </icfcga:clientSecret>
+        </icfc:configurationProperties>
+        <icfc:resultsHandlerConfiguration>
+            <icfc:filteredResultsHandlerInValidationMode>true</icfc:filteredResultsHandlerInValidationMode>
+        </icfc:resultsHandlerConfiguration>
+    </connectorConfiguration>
+
+    <schemaHandling>
+        <objectType>
+            <kind>account</kind>
+            <displayName>Zoom Account</displayName>
+            <default>true</default>
+            <objectClass>ri:AccountObjectClass</objectClass>
+            <attribute>
+                <c:ref>icfs:name</c:ref>
+                <displayName>Login</displayName>
+                <outbound>
+                    <authoritative>true</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>strong</strength>
+                    <source>
+                        <path>$user/extension/username</path>
+                    </source>
+                    <expression>
+                        <script>
+                            <code>
+                                username + '@ndsu.edu'
+                            </code>
+                        </script>
+                    </expression>
+                </outbound>
+                <inbound>
+                    <authoritative>false</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>weak</strength>
+                    <expression>
+                        <script>
+                            <code>
+                                if (input?.trim()) {
+                                    input.split("@").getAt(0).trim().toLowerCase()
+                                }
+                            </code>
+                        </script>
+                    </expression>
+                    <target>
+                        <path>$user/extension/username</path>
+                    </target>
+                </inbound>
+            </attribute>
+            <attribute>
+                <c:ref>ri:FIRST_NAME</c:ref>
+                <displayName>Given Name</displayName>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <c:path>$user/givenName</c:path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute>
+                <c:ref>ri:LAST_NAME</c:ref>
+                <displayName>Family Name</displayName>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <c:path>$user/familyName</c:path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute>
+                <c:ref>icfs:uid</c:ref>
+                <displayName>ICF UID</displayName>
+                <limitations>
+                    <layer>presentation</layer>
+                    <processing>ignore</processing>
+                </limitations>
+            </attribute>
+            <attribute>
+                <ref>ri:TYPE</ref>
+                <outbound>
+                    <strength>weak</strength>
+                    <expression>
+                        <value>2</value>
+                    </expression>
+                </outbound>
+                <inbound>
+                    <target>
+                        <path>givenName</path>
+                    </target>
+                    <condition>
+                        <script>
+                            <code>
+                                return false
+                            </code>
+                        </script>
+                    </condition>
+                </inbound>
+            </attribute>
+            <attribute>
+                <c:ref>ri:EMAIL</c:ref>
+                <displayName>Email</displayName>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>$user/extension/username</path>
+                    </source>
+                    <expression>
+                        <script>
+                            <code>
+                                username + '@ndsu.edu'
+                            </code>
+                        </script>
+                    </expression>
+                </outbound>
+                <inbound>
+                    <strength>weak</strength>
+                    <expression>
+                        <script>
+                            <code>
+                                if (input?.trim()) {
+                                    input.split("@").getAt(0).trim().toLowerCase()
+                                }
+                            </code>
+                        </script>
+                    </expression>
+                    <target>
+                        <path>$user/extension/username</path>
+                    </target>
+                </inbound>
+            </attribute>
+            <attribute>
+                <ref>ri:PHONE_NUMBER</ref>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>$focus/extension/ndsuNumber</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute>
+                <ref>ri:EXTENSION_NUMBER</ref>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>$focus/extension/ndsuExtension</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <activation>
+                <existence>
+                    <outbound id="11">
+                        <strength>weak</strength>
+                        <expression>
+                            <path>$focusExists</path>
+                        </expression>
+                    </outbound>
+                    <outbound id="12">
+                        <name>delayed delete</name>
+                        <strength>strong</strength>
+                        <timeFrom>
+                            <referenceTime>
+                                <path>$projection/activation/disableTimestamp</path>
+                            </referenceTime>
+                            <offset>P100D</offset>
+                        </timeFrom>
+                        <source>
+                            <path>$projection/activation/administrativeStatus</path>
+                        </source>
+                        <source>
+                            <path>$projection/activation/disableReason</path>
+                        </source>
+                        <expression>
+                            <value>false</value>
+                        </expression>
+                        <condition>
+                            <script>
+                                <code>
+                                    import com.evolveum.midpoint.xml.ns._public.common.common_3.ActivationStatusType
+                                    import com.evolveum.midpoint.schema.constants.SchemaConstants
+                                    administrativeStatus == ActivationStatusType.DISABLED &amp;&amp;
+                                            // do not delete explicitly disabled accounts
+                                            (disableReason == SchemaConstants.MODEL_DISABLE_REASON_DEPROVISION ||
+                                                    disableReason == SchemaConstants.MODEL_DISABLE_REASON_MAPPED)
+                                </code>
+                            </script>
+                        </condition>
+                    </outbound>
+                </existence>
+                <administrativeStatus>
+                    <outbound id="13">
+                        <strength>strong</strength>
+                        <expression>
+                            <script>
+                                <code>
+                                    import com.evolveum.midpoint.xml.ns._public.common.common_3.ActivationStatusType
+                                    // If assignments exist, then send the administrative status of the user. Otherwise, disable it.
+                                    if (legal) {
+                                        return input
+                                    } else {
+                                        return ActivationStatusType.DISABLED
+                                    }
+                                </code>
+                            </script>
+                        </expression>
+                    </outbound>
+                </administrativeStatus>
+            </activation>
+        </objectType>
+    </schemaHandling>
+    <capabilities>
+        <cachingMetadata>
+            <retrievalTimestamp>2024-03-20T17:32:40.005Z</retrievalTimestamp>
+            <serialNumber>2b0aeb9de264438d-2884ae143307f5d3</serialNumber>
+        </cachingMetadata>
+        <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3">
+            <cap:schema/>
+            <cap:testConnection/>
+            <cap:create/>
+            <cap:update>
+                <cap:delta>true</cap:delta>
+                <cap:addRemoveAttributeValues>true</cap:addRemoveAttributeValues>
+            </cap:update>
+            <cap:delete/>
+            <cap:script>
+                <cap:host>
+                    <cap:type>connector</cap:type>
+                </cap:host>
+            </cap:script>
+            <cap:pagedSearch/>
+            <cap:read>
+                <cap:returnDefaultAttributesOption>true</cap:returnDefaultAttributesOption>
+            </cap:read>
+        </native>
+        <configured xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3">
+            <cap:testConnection>
+                <cap:enabled>true</cap:enabled>
+            </cap:testConnection>
+            <cap:create>
+                <cap:enabled>true</cap:enabled>
+            </cap:create>
+            <cap:update>
+                <cap:enabled>true</cap:enabled>
+                <cap:delta>true</cap:delta>
+                <cap:addRemoveAttributeValues>true</cap:addRemoveAttributeValues>
+            </cap:update>
+            <cap:delete>
+                <cap:enabled>true</cap:enabled>
+            </cap:delete>
+            <cap:script>
+                <cap:enabled>true</cap:enabled>
+                <cap:host>
+                    <cap:type>connector</cap:type>
+                </cap:host>
+            </cap:script>
+            <cap:read>
+                <cap:enabled>true</cap:enabled>
+                <cap:returnDefaultAttributesOption>true</cap:returnDefaultAttributesOption>
+            </cap:read>
+            <cap:activation>
+                <cap:enabled>true</cap:enabled>
+                <cap:status>
+                    <cap:enabled>true</cap:enabled>
+                    <cap:returnedByDefault>false</cap:returnedByDefault>
+                    <cap:ignoreAttribute>true</cap:ignoreAttribute>
+                </cap:status>
+                <cap:validFrom>
+                    <cap:enabled>false</cap:enabled>
+                    <cap:returnedByDefault>false</cap:returnedByDefault>
+                </cap:validFrom>
+                <cap:validTo>
+                    <cap:enabled>false</cap:enabled>
+                    <cap:returnedByDefault>false</cap:returnedByDefault>
+                </cap:validTo>
+                <cap:lockoutStatus>
+                    <cap:enabled>false</cap:enabled>
+                    <cap:returnedByDefault>false</cap:returnedByDefault>
+                    <cap:ignoreAttribute>true</cap:ignoreAttribute>
+                </cap:lockoutStatus>
+            </cap:activation>
+        </configured>
+    </capabilities>
+    <projection>
+        <assignmentPolicyEnforcement>relative</assignmentPolicyEnforcement>
+    </projection>
+    <synchronization>
+        <objectSynchronization>
+            <objectClass>ri:AccountObjectClass</objectClass>
+            <kind>account</kind>
+            <intent>default</intent>
+            <focusType>c:UserType</focusType>
+            <enabled>true</enabled>
+            <correlation>
+                <q:equal xmlns="">
+                    <q:path>extension/username</q:path>
+                    <expression>
+                        <script>
+                            <code>
+                                basic.getPropertyValue(projection, "name")?.trim()?.toString()?.split("@")?.getAt(0)?.toLowerCase()
+                            </code>
+                        </script>
+                    </expression>
+                </q:equal>
+            </correlation>
+            <reaction>
+                <situation>linked</situation>
+                <synchronize>true</synchronize>
+            </reaction>
+            <reaction>
+                <situation>unlinked</situation>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#link</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>deleted</situation>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#deleteShadow</handlerUri>
+                </action>
+            </reaction>
+        </objectSynchronization>
+    </synchronization>
+</resource>

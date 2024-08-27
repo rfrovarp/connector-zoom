@@ -115,11 +115,25 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
       RestResponseData<Void> response = driver.executeRequest(req);
 
       if (response.getResponseStatusCode() == 204) {
+        ZoomUser current = getOne(driver, userId, null);
+        // Update email if required
+        if (current != null
+                && current.getEmail() != null
+                && current.getEmail().trim().length() > 0
+                && user.getEmail() != null
+                && user.getEmail().trim().length() > 0
+                && !current.getEmail().trim().equalsIgnoreCase(user.getEmail().trim()) )
+        {
+          if (updateUserEmail(driver, userId, user.getEmail().trim()))
+          {
+            current.setEmail(user.getEmail().trim());
+          }
+        }
         // Update Groups
         if (user.getGroupsToAdd() != null || user.getGroupsToRemove() != null) {
           updateGroupAssignments(driver, userId, user.getGroupsToAdd(), user.getGroupsToRemove());
         }
-        ZoomUser current = getOne(driver, userId, null);
+        current = getOne(driver, userId, null);
         if (current.getFeature() != null
             && current.getFeature().getZoomPhone() != null
             && current.getFeature().getZoomPhone()) {
@@ -470,6 +484,28 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
       }
     }
     return site;
+  }
+
+  private boolean updateUserEmail(ZoomDriver driver, String userId, String userEmail)
+  {
+    boolean result = false;
+    RestRequest req = new RestRequest.Builder<>(Void.class)
+                    .withPut()
+                    .withRequestBody("{\"email\": \"" +  userEmail +"\"}")
+                    .withRequestUri("/users/" + userId + "/email")
+                    .build();
+
+    RestResponseData<Void> response = driver.executeRequest(req);
+    if ( response.getResponseStatusCode() == 200 || response.getResponseStatusCode() == 204) {
+      result = true;
+    }
+    else
+    {
+      Logger.warn(
+              this,
+              String.format("Status %d: Cannot change email address of user %s", response.getResponseStatusCode(), userId));
+    }
+    return result;
   }
 
   private void updateUserStatus(ZoomDriver zoomDriver, String desiredStatus, String userId) {

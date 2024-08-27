@@ -607,6 +607,11 @@ The connector’s deep import option is similar to the deep get option. The deep
 
 The duplicate record returns Id configuration option is invoked when an HTTP POST request, used to create a record, returns HTTP 409 (Conflict). This typically indicates that the record we are attempting to create already exists. When this option is true the connector will attempt to get the record by name and return the record’s ID value to the caller. In this way a record can be seamlessly imported when it already exists on the target server. Unfortunately the Zoom API does not return HTTP 409 instead it returns HTTP 412. Because this is the case the connector will always do a lookup for an existing object type before creating the type.
 
+## Email Address Changes
+
+The Zoom API does not allow an email address to be changed once the user is created unless you have Managed Domains enabled. 
+You enable this through Account Management. The connector will fail gracefully with an error message in the log. 
+If more than 3 attempts are made to change a user's address within a 24 hour period, the Zoom API will return a rate limiting error (HTTP 429). 
 
 # References
 

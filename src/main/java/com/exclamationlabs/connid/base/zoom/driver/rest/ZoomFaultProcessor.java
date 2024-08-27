@@ -95,6 +95,8 @@ public class ZoomFaultProcessor implements RestFaultProcessor {
 
       case USER_NOT_FOUND:
       case GROUP_NOT_FOUND:
+        return false;
+      case REQUIRES_MANAGED_DOMAIN:
         // ignore fault and return to Midpoint
         return false;
 

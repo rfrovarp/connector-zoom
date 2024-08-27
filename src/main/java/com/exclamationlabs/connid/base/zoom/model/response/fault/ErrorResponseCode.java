@@ -22,6 +22,7 @@ public interface ErrorResponseCode {
 
   int USER_NOT_FOUND = 1001;
   int USER_ALREADY_EXISTS = 1005;
+  int REQUIRES_MANAGED_DOMAIN = 1116;
 
   int GROUP_NOT_FOUND = 4130;
   int GROUP_NAME_ALREADY_EXISTS = 4132;

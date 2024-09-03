@@ -14,7 +14,7 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
-    id 'com.google.cloud.artifactregistry.gradle-plugin' version '2.2.0'
+    id "com.google.cloud.artifactregistry.gradle-plugin" version "${google_artifact_plugin_version}"
     id 'com.github.sherter.google-java-format' version '0.9'
     id 'idea'
 }
@@ -41,8 +41,9 @@ idea {
 }
 apply plugin: 'com.exclamationlabs.connid.base.config.plugin'
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+// Java Version 11
+sourceCompatibility = '1.11'
+targetCompatibility = '1.11'
 
 def build_version = System.getenv('BUILD_NUMBER') == null ? System.currentTimeMillis() : System.getenv('BUILD_NUMBER')
 project.version="${project_version}-${build_version}"

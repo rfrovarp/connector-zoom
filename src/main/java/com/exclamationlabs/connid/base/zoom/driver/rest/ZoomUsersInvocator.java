@@ -118,14 +118,12 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
         ZoomUser current = getOne(driver, userId, null);
         // Update email if required
         if (current != null
-                && current.getEmail() != null
-                && current.getEmail().trim().length() > 0
-                && user.getEmail() != null
-                && user.getEmail().trim().length() > 0
-                && !current.getEmail().trim().equalsIgnoreCase(user.getEmail().trim()) )
-        {
-          if (updateUserEmail(driver, userId, user.getEmail().trim()))
-          {
+            && current.getEmail() != null
+            && current.getEmail().trim().length() > 0
+            && user.getEmail() != null
+            && user.getEmail().trim().length() > 0
+            && !current.getEmail().trim().equalsIgnoreCase(user.getEmail().trim())) {
+          if (updateUserEmail(driver, userId, user.getEmail().trim())) {
             current.setEmail(user.getEmail().trim());
           }
         }
@@ -486,24 +484,24 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
     return site;
   }
 
-  private boolean updateUserEmail(ZoomDriver driver, String userId, String userEmail)
-  {
+  private boolean updateUserEmail(ZoomDriver driver, String userId, String userEmail) {
     boolean result = false;
-    RestRequest req = new RestRequest.Builder<>(Void.class)
-                    .withPut()
-                    .withRequestBody("{\"email\": \"" +  userEmail +"\"}")
-                    .withRequestUri("/users/" + userId + "/email")
-                    .build();
+    RestRequest req =
+        new RestRequest.Builder<>(Void.class)
+            .withPut()
+            .withRequestBody("{\"email\": \"" + userEmail + "\"}")
+            .withRequestUri("/users/" + userId + "/email")
+            .build();
 
     RestResponseData<Void> response = driver.executeRequest(req);
-    if ( response.getResponseStatusCode() == 200 || response.getResponseStatusCode() == 204) {
+    if (response.getResponseStatusCode() == 200 || response.getResponseStatusCode() == 204) {
       result = true;
-    }
-    else
-    {
+    } else {
       Logger.warn(
-              this,
-              String.format("Status %d: Cannot change email address of user %s", response.getResponseStatusCode(), userId));
+          this,
+          String.format(
+              "Status %d: Cannot change email address of user %s",
+              response.getResponseStatusCode(), userId));
     }
     return result;
   }

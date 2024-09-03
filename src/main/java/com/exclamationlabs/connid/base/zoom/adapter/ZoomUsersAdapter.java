@@ -92,9 +92,9 @@ public class ZoomUsersAdapter extends BaseAdapter<ZoomUser, ZoomConfiguration> {
         AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, LAST_NAME));
 
     user.setEmail(AdapterValueTypeConverter.getIdentityNameAttributeValue(attributes));
-    if ( user.getEmail() == null || user.getEmail().isEmpty() ) {
+    if (user.getEmail() == null || user.getEmail().isEmpty()) {
       user.setEmail(
-              AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, EMAIL));
+          AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, EMAIL));
     }
 
     user.setTimezone(

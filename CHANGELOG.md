@@ -1,6 +1,7 @@
 # connector-zoom
 
 ## Change Log
++ **4.2.2** - Update Connector-Base Version, GAR Updates, and Update to Java 11 FIN-12386 (9/3/2024)
 + **4.2.0** - Added Email Address Change Support
 + **4.2.0** - Added Zoom Phone Support
 + **4.1.5** - Enable Pagination for datasets larger than 300 users NDSU-1 (01/29/2023)

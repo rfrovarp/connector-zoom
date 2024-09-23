@@ -41,7 +41,7 @@ public class ZoomConnectorApiIntegrationTest
 
   private static String generatedUserId;
   private static String generatedGroupId;
-  /*
+
     private static final String existingUserId = "redacted";
     private static final String phoneUserId1 = "redacted";
     private static final String phoneUserId1Email = "redacted";
@@ -58,23 +58,7 @@ public class ZoomConnectorApiIntegrationTest
     private static final String lastName = "Martian";
     private static final String siteMain = "Main Site";
     private static final String siteCoral = "redacted";
-  */
-  private static final String existingUserId = "LbHWnFUQQsKddfRyEaBFJg";
-  private static final String phoneUserId1 = "zvfArRIISj-nFTMBnZPYPQ";
-  private static final String phoneUserId1Email = "sfox+johnjohnson@exclamationlabs.com";
-  private static final String phoneUserId2 = "YpNFe62vRIW8ggVZOwN3-Q";
-  private static final String phoneUserId2Email = "sfox+jimmystuart@exclamationlabs.com";
-  private static final String existingPhone1Site1 = "+12402219825";
-  private static final String existingPhone2Site1 = "+12402219840";
-  private static final String existingPhone1Site2 = "+19546034605";
-  private static final String existingPhone2Site2 = "+19546034814";
-  private static final String existingGroupId = "y5_JWA-2RbynDONTKU5csA";
-  private static final String generatedGroupName = "Students";
-  private static final String userEmail = "sfox+FamousMartian@exclamationlabs.com";
-  private static final String firstName = "Famous";
-  private static final String lastName = "Martian";
-  private static final String siteMain = "Main Site";
-  private static final String siteCoral = "Coral Springs";
+
 
   @Override
   protected ZoomConfiguration getConfiguration() {

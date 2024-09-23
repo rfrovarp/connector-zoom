@@ -30,7 +30,7 @@ public class ZoomGroupsAdapter extends BaseAdapter<ZoomGroup, ZoomConfiguration>
 
   @Override
   public ObjectClass getType() {
-    return ObjectClass.GROUP;
+    return new ObjectClass("ZoomGroup");
   }
 
   @Override

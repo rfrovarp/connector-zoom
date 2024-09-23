@@ -38,7 +38,7 @@
             <kind>account</kind>
             <displayName>Zoom Account</displayName>
             <default>true</default>
-            <objectClass>ri:AccountObjectClass</objectClass>
+            <objectClass>ri:ZoomUser</objectClass>
             <attribute>
                 <c:ref>icfs:name</c:ref>
                 <displayName>Login</displayName>
@@ -312,7 +312,7 @@
     </projection>
     <synchronization>
         <objectSynchronization>
-            <objectClass>ri:AccountObjectClass</objectClass>
+            <objectClass>ri:ZoomUser</objectClass>
             <kind>account</kind>
             <intent>default</intent>
             <focusType>c:UserType</focusType>

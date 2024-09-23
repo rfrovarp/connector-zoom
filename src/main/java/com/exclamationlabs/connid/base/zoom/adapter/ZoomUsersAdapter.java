@@ -31,7 +31,7 @@ public class ZoomUsersAdapter extends BaseAdapter<ZoomUser, ZoomConfiguration> {
 
   @Override
   public ObjectClass getType() {
-    return ObjectClass.ACCOUNT;
+    return new ObjectClass("ZoomUser");
   }
 
   @Override

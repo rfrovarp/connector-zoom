@@ -91,8 +91,8 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
     attributes.add(new AttributeBuilder().setName(LAST_NAME.name()).addValue("Doe").build());
     attributes.add(new AttributeBuilder().setName(GROUP_IDS.name()).addValue("5678").build());
 
-    Uid newId =
-        connector.create(ObjectClass.ACCOUNT, attributes, new OperationOptionsBuilder().build());
+    ObjectClass oClass = new ObjectClass("ZoomUser");
+    Uid newId = connector.create(oClass, attributes, new OperationOptionsBuilder().build());
     assertNotNull(newId);
     assertNotNull(newId.getUidValue());
   }
@@ -116,12 +116,10 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
     attributes.add(
         new AttributeDeltaBuilder().setName(GROUP_IDS.name()).addValueToAdd("5678").build());
 
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Set<AttributeDelta> response =
         connector.updateDelta(
-            ObjectClass.ACCOUNT,
-            new Uid("1234"),
-            attributes,
-            new OperationOptionsBuilder().build());
+            oClass, new Uid("1234"), attributes, new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
@@ -135,9 +133,8 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
     List<String> idValues = new ArrayList<>();
     List<String> nameValues = new ArrayList<>();
     ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
-
-    connector.executeQuery(
-        ObjectClass.ACCOUNT, "", resultsHandler, new OperationOptionsBuilder().build());
+    ObjectClass oClass = new ObjectClass("ZoomUser");
+    connector.executeQuery(oClass, "", resultsHandler, new OperationOptionsBuilder().build());
     assertTrue(idValues.size() >= 1);
     assertTrue(StringUtils.isNotBlank(idValues.get(0)));
     assertTrue(StringUtils.isNotBlank(nameValues.get(0)));
@@ -152,9 +149,8 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
     List<String> idValues = new ArrayList<>();
     List<String> nameValues = new ArrayList<>();
     ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
-
-    connector.executeQuery(
-        ObjectClass.ACCOUNT, "1234", resultsHandler, new OperationOptionsBuilder().build());
+    ObjectClass oClass = new ObjectClass("ZoomUser");
+    connector.executeQuery(oClass, "1234", resultsHandler, new OperationOptionsBuilder().build());
     assertEquals(1, idValues.size());
     assertTrue(StringUtils.isNotBlank(idValues.get(0)));
   }
@@ -165,12 +161,12 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
         "{\"id\":\"yRU7LBa6RmenCOjsoEJkxw\",\"name\":\"Alpha Flight\",\"total_members\":0}";
     prepareMockResponse(responseData);
     Set<Attribute> attributes = new HashSet<>();
+    ObjectClass gClass = new ObjectClass("ZoomGroup");
 
     attributes.add(
         new AttributeBuilder().setName(GROUP_NAME.name()).addValue("role name1").build());
 
-    Uid newId =
-        connector.create(ObjectClass.GROUP, attributes, new OperationOptionsBuilder().build());
+    Uid newId = connector.create(gClass, attributes, new OperationOptionsBuilder().build());
     assertNotNull(newId);
     assertNotNull(newId.getUidValue());
   }
@@ -179,6 +175,7 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
   public void test220GroupModify() {
     prepareMockResponse();
     Set<AttributeDelta> attributes = new HashSet<>();
+    ObjectClass gClass = new ObjectClass("ZoomGroup");
     attributes.add(
         new AttributeDeltaBuilder()
             .setName(GROUP_NAME.name())
@@ -187,7 +184,7 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
 
     Set<AttributeDelta> response =
         connector.updateDelta(
-            ObjectClass.GROUP, new Uid("1234"), attributes, new OperationOptionsBuilder().build());
+            gClass, new Uid("1234"), attributes, new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
@@ -199,10 +196,10 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
     prepareMockResponse(responseData);
     List<String> idValues = new ArrayList<>();
     List<String> nameValues = new ArrayList<>();
+    ObjectClass gClass = new ObjectClass("ZoomGroup");
     ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
 
-    connector.executeQuery(
-        ObjectClass.GROUP, "", resultsHandler, new OperationOptionsBuilder().build());
+    connector.executeQuery(gClass, "", resultsHandler, new OperationOptionsBuilder().build());
     assertTrue(idValues.size() >= 1);
     assertTrue(StringUtils.isNotBlank(idValues.get(0)));
     assertTrue(StringUtils.isNotBlank(nameValues.get(0)));
@@ -215,10 +212,10 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
     prepareMockResponse(responseData);
     List<String> idValues = new ArrayList<>();
     List<String> nameValues = new ArrayList<>();
+    ObjectClass gClass = new ObjectClass("ZoomGroup");
     ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
 
-    connector.executeQuery(
-        ObjectClass.GROUP, "1234", resultsHandler, new OperationOptionsBuilder().build());
+    connector.executeQuery(gClass, "1234", resultsHandler, new OperationOptionsBuilder().build());
     assertEquals(1, idValues.size());
     assertTrue(StringUtils.isNotBlank(idValues.get(0)));
     assertTrue(StringUtils.isNotBlank(nameValues.get(0)));
@@ -227,13 +224,15 @@ public class ZoomConnectorTest extends ConnectorMockRestTest {
   @Test
   public void test290GroupDelete() {
     prepareMockResponse();
-    connector.delete(ObjectClass.GROUP, new Uid("1234"), new OperationOptionsBuilder().build());
+    ObjectClass gClass = new ObjectClass("ZoomGroup");
+    connector.delete(gClass, new Uid("1234"), new OperationOptionsBuilder().build());
   }
 
   @Disabled
   @Test
   public void test390UserDelete() {
     prepareMockResponse();
-    connector.delete(ObjectClass.ACCOUNT, new Uid("1234"), new OperationOptionsBuilder().build());
+    ObjectClass oClass = new ObjectClass("ZoomUser");
+    connector.delete(oClass, new Uid("1234"), new OperationOptionsBuilder().build());
   }
 }

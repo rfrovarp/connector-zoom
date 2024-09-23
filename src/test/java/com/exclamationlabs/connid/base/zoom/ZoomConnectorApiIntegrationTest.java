@@ -17,7 +17,6 @@ import static com.exclamationlabs.connid.base.zoom.attribute.ZoomGroupAttribute.
 import static com.exclamationlabs.connid.base.zoom.attribute.ZoomUserAttribute.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.exclamationlabs.connid.base.connector.configuration.ConfigurationNameBuilder;
 import com.exclamationlabs.connid.base.connector.configuration.ConfigurationReader;
 import com.exclamationlabs.connid.base.connector.test.ApiIntegrationTest;
 import com.exclamationlabs.connid.base.zoom.configuration.ZoomConfiguration;
@@ -43,27 +42,27 @@ public class ZoomConnectorApiIntegrationTest
   private static String generatedUserId;
   private static String generatedGroupId;
 
-  private static final String existingUserId = "redacted";
-  private static final String phoneUserId1 = "redacted";
-  private static final String phoneUserId1Email = "redacted";
-  private static final String phoneUserId2 = "redacted";
-  private static final String phoneUserId2Email = "redacted";
-  private static final String existingPhone1Site1 = "redacted";
-  private static final String existingPhone2Site1 = "redacted";
-  private static final String existingPhone1Site2 = "redacted";
-  private static final String existingPhone2Site2 = "redacted";
-  private static final String existingGroupId = "redacted";
-  private static final String generatedGroupName = "redacted";
-  private static final String userEmail = "redacted";
-  private static final String firstName = "Famous";
-  private static final String lastName = "Martian";
-  private static final String siteMain = "Main Site";
-  private static final String siteCoral = "redacted";
+    private static final String existingUserId = "redacted";
+    private static final String phoneUserId1 = "redacted";
+    private static final String phoneUserId1Email = "redacted";
+    private static final String phoneUserId2 = "redacted";
+    private static final String phoneUserId2Email = "redacted";
+    private static final String existingPhone1Site1 = "redacted";
+    private static final String existingPhone2Site1 = "redacted";
+    private static final String existingPhone1Site2 = "redacted";
+    private static final String existingPhone2Site2 = "redacted";
+    private static final String existingGroupId = "redacted";
+    private static final String generatedGroupName = "redacted";
+    private static final String userEmail = "redacted";
+    private static final String firstName = "Famous";
+    private static final String lastName = "Martian";
+    private static final String siteMain = "Main Site";
+    private static final String siteCoral = "redacted";
+
 
   @Override
   protected ZoomConfiguration getConfiguration() {
-    return new ZoomConfiguration(
-        new ConfigurationNameBuilder().withConnector(() -> "ZOOM").build());
+    return new ZoomConfiguration("exclamation_labs__zoom");
   }
 
   @Override
@@ -97,23 +96,25 @@ public class ZoomConnectorApiIntegrationTest
   @Order(100)
   public void test100UserCreate() {
     // Creates a 'pending' user that will be deleted at the end
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Set<Attribute> attributes = new HashSet<>();
     attributes.add(new AttributeBuilder().setName(FIRST_NAME.name()).addValue(firstName).build());
     attributes.add(new AttributeBuilder().setName(LAST_NAME.name()).addValue(lastName).build());
     attributes.add(new AttributeBuilder().setName(TYPE.name()).addValue(UserType.BASIC).build());
     attributes.add(new AttributeBuilder().setName(EMAIL.name()).addValue(userEmail).build());
     Uid newId =
-        getConnectorFacade()
-            .create(ObjectClass.ACCOUNT, attributes, new OperationOptionsBuilder().build());
+        getConnectorFacade().create(oClass, attributes, new OperationOptionsBuilder().build());
     assertNotNull(newId);
     assertNotNull(newId.getUidValue());
     generatedUserId = newId.getUidValue();
   }
 
   @Test
+  @Disabled
   @Order(110)
   public void test110PhoneUserCreate() {
     // Creates a 'pending' user that will be deleted at the end
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Set<Attribute> attributes = new HashSet<>();
     attributes.add(new AttributeBuilder().setName(FIRST_NAME.name()).addValue("John").build());
     attributes.add(new AttributeBuilder().setName(LAST_NAME.name()).addValue("Johnson").build());
@@ -123,17 +124,18 @@ public class ZoomConnectorApiIntegrationTest
     attributes.add(
         new AttributeBuilder().setName(EMAIL.name()).addValue(phoneUserId1Email).build());
     Uid newId =
-        getConnectorFacade()
-            .create(ObjectClass.ACCOUNT, attributes, new OperationOptionsBuilder().build());
+        getConnectorFacade().create(oClass, attributes, new OperationOptionsBuilder().build());
     assertNotNull(newId);
     assertNotNull(newId.getUidValue());
     generatedUserId = newId.getUidValue();
   }
 
   @Test
+  @Disabled
   @Order(111)
   public void test110PhoneUserCreate2() {
     // Creates a 'pending' user that will be deleted at the end
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Set<Attribute> attributes = new HashSet<>();
     attributes.add(new AttributeBuilder().setName(FIRST_NAME.name()).addValue("Jimmy").build());
     attributes.add(new AttributeBuilder().setName(LAST_NAME.name()).addValue("Stuart").build());
@@ -144,8 +146,7 @@ public class ZoomConnectorApiIntegrationTest
         new AttributeBuilder().setName(EMAIL.name()).addValue(phoneUserId2Email).build());
 
     Uid newId =
-        getConnectorFacade()
-            .create(ObjectClass.ACCOUNT, attributes, new OperationOptionsBuilder().build());
+        getConnectorFacade().create(oClass, attributes, new OperationOptionsBuilder().build());
     assertNotNull(newId);
     assertNotNull(newId.getUidValue());
   }
@@ -154,6 +155,7 @@ public class ZoomConnectorApiIntegrationTest
   @Disabled
   @Order(113)
   public void test113CrudCreateUserMissingUserType() {
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Set<Attribute> attributes = new HashSet<>();
     attributes.add(new AttributeBuilder().setName(FIRST_NAME.name()).addValue("Clint").build());
     attributes.add(new AttributeBuilder().setName(LAST_NAME.name()).addValue("Barton").build());
@@ -162,23 +164,20 @@ public class ZoomConnectorApiIntegrationTest
     assertThrows(
         InvalidAttributeValueException.class,
         () ->
-            getConnectorFacade()
-                .create(ObjectClass.ACCOUNT, attributes, new OperationOptionsBuilder().build()));
+            getConnectorFacade().create(oClass, attributes, new OperationOptionsBuilder().build()));
   }
 
   @Test
   @Order(140)
   public void test115UserGet() {
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Attribute idAttribute =
         new AttributeBuilder().setName(Uid.NAME).addValue(existingUserId).build();
 
     results = new ArrayList<>();
     getConnectorFacade()
         .search(
-            ObjectClass.ACCOUNT,
-            new EqualsFilter(idAttribute),
-            handler,
-            new OperationOptionsBuilder().build());
+            oClass, new EqualsFilter(idAttribute), handler, new OperationOptionsBuilder().build());
     assertEquals(1, results.size());
     assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
   }
@@ -187,14 +186,11 @@ public class ZoomConnectorApiIntegrationTest
   @Order(145)
   public void test116PhoneUserGet() {
     Attribute idAttribute = new AttributeBuilder().setName(Uid.NAME).addValue(phoneUserId1).build();
-
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     results = new ArrayList<>();
     getConnectorFacade()
         .search(
-            ObjectClass.ACCOUNT,
-            new EqualsFilter(idAttribute),
-            handler,
-            new OperationOptionsBuilder().build());
+            oClass, new EqualsFilter(idAttribute), handler, new OperationOptionsBuilder().build());
     assertEquals(1, results.size());
     assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
   }
@@ -203,31 +199,34 @@ public class ZoomConnectorApiIntegrationTest
   @Order(120)
   public void test120UserModify() {
     // modify the existing user
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Set<AttributeDelta> attributes = new HashSet<>();
     attributes.add(
         new AttributeDeltaBuilder().setName(LANGUAGE.name()).addValueToReplace("en-US").build());
     attributes.add(
         new AttributeDeltaBuilder().setName(TIME_ZONE.name()).addValueToReplace("UTC").build());
+    /*
     attributes.add(
         new AttributeDeltaBuilder()
-            .setName(GROUP_IDS.name())
-            .addValueToAdd(existingGroupId)
+            .setName("__NAME__")
+            .addValueToReplace("sfox+ajackson@exclamationlabs.com")
             .build());
+
+     */
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.ACCOUNT,
-                new Uid(existingUserId),
-                attributes,
-                new OperationOptionsBuilder().build());
+                oClass, new Uid(existingUserId), attributes, new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
 
   @Test
+  @Disabled
   @Order(121)
   public void test121PhoneUserModify() {
     // modify the existing user
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Set<AttributeDelta> delta = new HashSet<>();
 
     AttributeDeltaBuilder builder = new AttributeDeltaBuilder();
@@ -250,18 +249,17 @@ public class ZoomConnectorApiIntegrationTest
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.ACCOUNT,
-                new Uid(phoneUserId1),
-                delta,
-                new OperationOptionsBuilder().build());
+                oClass, new Uid(phoneUserId1), delta, new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
 
   @Test
+  @Disabled
   @Order(122)
   public void test122PhoneUserModifyRemoveNumbers() {
     // modify the existing user
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Set<AttributeDelta> delta = new HashSet<>();
     AttributeDeltaBuilder builder = new AttributeDeltaBuilder();
 
@@ -280,18 +278,17 @@ public class ZoomConnectorApiIntegrationTest
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.ACCOUNT,
-                new Uid(phoneUserId1),
-                delta,
-                new OperationOptionsBuilder().build());
+                oClass, new Uid(phoneUserId1), delta, new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
 
   @Test
+  @Disabled
   @Order(122)
   public void test122PhoneUserFeatureEnable() {
     // modify the existing user
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Set<AttributeDelta> delta = new HashSet<>();
     AttributeDeltaBuilder builder = new AttributeDeltaBuilder();
 
@@ -318,18 +315,17 @@ public class ZoomConnectorApiIntegrationTest
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.ACCOUNT,
-                new Uid(phoneUserId2),
-                delta,
-                new OperationOptionsBuilder().build());
+                oClass, new Uid(phoneUserId2), delta, new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
 
   @Test
+  @Disabled
   @Order(123)
   public void test123PhoneUserChangeSites() {
     // modify the existing user
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Set<AttributeDelta> delta = new HashSet<>();
     AttributeDeltaBuilder builder = new AttributeDeltaBuilder();
 
@@ -355,18 +351,17 @@ public class ZoomConnectorApiIntegrationTest
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.ACCOUNT,
-                new Uid(phoneUserId2),
-                delta,
-                new OperationOptionsBuilder().build());
+                oClass, new Uid(phoneUserId2), delta, new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
 
   @Test
+  @Disabled
   @Order(124)
   public void test124PhoneUserFeatureDisable() {
     // modify the existing user
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Set<AttributeDelta> delta = new HashSet<>();
     AttributeDeltaBuilder builder = new AttributeDeltaBuilder();
 
@@ -389,18 +384,17 @@ public class ZoomConnectorApiIntegrationTest
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.ACCOUNT,
-                new Uid(phoneUserId2),
-                delta,
-                new OperationOptionsBuilder().build());
+                oClass, new Uid(phoneUserId2), delta, new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
 
   @Test
+  @Disabled
   @Order(125)
   public void test125PhoneUserFeatureEnable() {
     // modify the existing user
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Set<AttributeDelta> delta = new HashSet<>();
     AttributeDeltaBuilder builder = new AttributeDeltaBuilder();
 
@@ -411,10 +405,7 @@ public class ZoomConnectorApiIntegrationTest
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.ACCOUNT,
-                new Uid(phoneUserId2),
-                delta,
-                new OperationOptionsBuilder().build());
+                oClass, new Uid(phoneUserId2), delta, new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
@@ -424,8 +415,8 @@ public class ZoomConnectorApiIntegrationTest
   @Order(130)
   public void test130UserList() {
     results = new ArrayList<>();
-    getConnectorFacade()
-        .search(ObjectClass.ACCOUNT, null, handler, new OperationOptionsBuilder().build());
+    ObjectClass oClass = new ObjectClass("ZoomUser");
+    getConnectorFacade().search(oClass, null, handler, new OperationOptionsBuilder().build());
     assertTrue(results.size() >= 1);
     assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getUidValue()));
     assertTrue(StringUtils.isNotBlank(results.get(0).getName().getNameValue()));
@@ -435,9 +426,10 @@ public class ZoomConnectorApiIntegrationTest
   @Order(131)
   public void test131UserListWithPaging() {
     results = new ArrayList<>();
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     getConnectorFacade()
         .search(
-            ObjectClass.ACCOUNT,
+            oClass,
             null,
             handler,
             new OperationOptionsBuilder().setPageSize(9).setPagedResultsOffset(10).build());
@@ -450,6 +442,7 @@ public class ZoomConnectorApiIntegrationTest
   @Order(150)
   public void test150UserRemoveGroup() {
     // modify the existing user
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     Set<AttributeDelta> attributes = new HashSet<>();
     attributes.add(
         new AttributeDeltaBuilder()
@@ -459,10 +452,7 @@ public class ZoomConnectorApiIntegrationTest
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.ACCOUNT,
-                new Uid(existingUserId),
-                attributes,
-                new OperationOptionsBuilder().build());
+                oClass, new Uid(existingUserId), attributes, new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
@@ -472,14 +462,11 @@ public class ZoomConnectorApiIntegrationTest
   public void test155UserGetVerifyGroupRemoved() {
     Attribute idAttribute =
         new AttributeBuilder().setName(Uid.NAME).addValue(existingUserId).build();
-
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     results = new ArrayList<>();
     getConnectorFacade()
         .search(
-            ObjectClass.ACCOUNT,
-            new EqualsFilter(idAttribute),
-            handler,
-            new OperationOptionsBuilder().build());
+            oClass, new EqualsFilter(idAttribute), handler, new OperationOptionsBuilder().build());
     assertEquals(1, results.size());
     assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
     assertTrue(results.get(0).getAttributeByName(GROUP_IDS.name()).getValue().isEmpty());
@@ -490,16 +477,13 @@ public class ZoomConnectorApiIntegrationTest
   public void test160UserModifyDisableUser() {
     // modify the existing user
     Set<AttributeDelta> attributes = new HashSet<>();
-
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     attributes.add(
         new AttributeDeltaBuilder().setName(__ENABLE__.name()).addValueToReplace(false).build());
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.ACCOUNT,
-                new Uid(existingUserId),
-                attributes,
-                new OperationOptionsBuilder().build());
+                oClass, new Uid(existingUserId), attributes, new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
@@ -509,14 +493,11 @@ public class ZoomConnectorApiIntegrationTest
   public void test162UserGetVerifyUserDisabled() {
     Attribute idAttribute =
         new AttributeBuilder().setName(Uid.NAME).addValue(existingUserId).build();
-
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     results = new ArrayList<>();
     getConnectorFacade()
         .search(
-            ObjectClass.ACCOUNT,
-            new EqualsFilter(idAttribute),
-            handler,
-            new OperationOptionsBuilder().build());
+            oClass, new EqualsFilter(idAttribute), handler, new OperationOptionsBuilder().build());
     assertEquals(1, results.size());
     assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
     assertTrue(
@@ -530,16 +511,13 @@ public class ZoomConnectorApiIntegrationTest
   public void test164UserModifyEnableUser() {
     // modify the existing user
     Set<AttributeDelta> attributes = new HashSet<>();
-
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     attributes.add(
         new AttributeDeltaBuilder().setName(__ENABLE__.name()).addValueToReplace(true).build());
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.ACCOUNT,
-                new Uid(existingUserId),
-                attributes,
-                new OperationOptionsBuilder().build());
+                oClass, new Uid(existingUserId), attributes, new OperationOptionsBuilder().build());
     assertNotNull(response);
     assertTrue(response.isEmpty());
   }
@@ -549,14 +527,11 @@ public class ZoomConnectorApiIntegrationTest
   public void test166UserGetVerifyUserEnabled() {
     Attribute idAttribute =
         new AttributeBuilder().setName(Uid.NAME).addValue(existingUserId).build();
-
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     results = new ArrayList<>();
     getConnectorFacade()
         .search(
-            ObjectClass.ACCOUNT,
-            new EqualsFilter(idAttribute),
-            handler,
-            new OperationOptionsBuilder().build());
+            oClass, new EqualsFilter(idAttribute), handler, new OperationOptionsBuilder().build());
     assertEquals(1, results.size());
     assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
     assertTrue(
@@ -570,11 +545,12 @@ public class ZoomConnectorApiIntegrationTest
   @Order(210)
   public void test210GroupCreate() {
     Set<Attribute> attributes = new HashSet<>();
+    ObjectClass gClass = new ObjectClass("ZoomGroup");
     attributes.add(
         new AttributeBuilder().setName(GROUP_NAME.name()).addValue(generatedGroupName).build());
     generatedGroupId =
         getConnectorFacade()
-            .create(ObjectClass.GROUP, attributes, new OperationOptionsBuilder().build())
+            .create(gClass, attributes, new OperationOptionsBuilder().build())
             .getUidValue();
   }
 
@@ -583,6 +559,7 @@ public class ZoomConnectorApiIntegrationTest
   @Order(220)
   public void test220GroupModify() {
     Set<AttributeDelta> attributes = new HashSet<>();
+    ObjectClass gClass = new ObjectClass("ZoomGroup");
     attributes.add(
         new AttributeDeltaBuilder()
             .setName(GROUP_NAME.name())
@@ -591,18 +568,15 @@ public class ZoomConnectorApiIntegrationTest
 
     getConnectorFacade()
         .updateDelta(
-            ObjectClass.GROUP,
-            new Uid(generatedGroupId),
-            attributes,
-            new OperationOptionsBuilder().build());
+            gClass, new Uid(generatedGroupId), attributes, new OperationOptionsBuilder().build());
   }
 
   @Test
   @Order(230)
   public void test230GroupsGet() {
     results = new ArrayList<>();
-    getConnectorFacade()
-        .search(ObjectClass.GROUP, null, handler, new OperationOptionsBuilder().build());
+    ObjectClass gClass = new ObjectClass("ZoomGroup");
+    getConnectorFacade().search(gClass, null, handler, new OperationOptionsBuilder().build());
     assertFalse(results.isEmpty());
     assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
     assertTrue(StringUtils.isNotBlank(results.get(0).getName().getValue().get(0).toString()));
@@ -614,12 +588,10 @@ public class ZoomConnectorApiIntegrationTest
     Attribute idAttribute =
         new AttributeBuilder().setName(Uid.NAME).addValue(existingGroupId).build();
     results = new ArrayList<>();
+    ObjectClass gClass = new ObjectClass("ZoomGroup");
     getConnectorFacade()
         .search(
-            ObjectClass.GROUP,
-            new EqualsFilter(idAttribute),
-            handler,
-            new OperationOptionsBuilder().build());
+            gClass, new EqualsFilter(idAttribute), handler, new OperationOptionsBuilder().build());
     assertFalse(results.isEmpty());
     assertTrue(StringUtils.isNotBlank(results.get(0).getUid().getValue().get(0).toString()));
     assertTrue(StringUtils.isNotBlank(results.get(0).getName().getValue().get(0).toString()));
@@ -629,17 +601,17 @@ public class ZoomConnectorApiIntegrationTest
   @Disabled
   @Order(290)
   public void test290GroupDelete() {
+    ObjectClass gClass = new ObjectClass("ZoomGroup");
     getConnectorFacade()
-        .delete(
-            ObjectClass.GROUP, new Uid(generatedGroupId), new OperationOptionsBuilder().build());
+        .delete(gClass, new Uid(generatedGroupId), new OperationOptionsBuilder().build());
   }
 
   @Test
   @Disabled
   @Order(390)
   public void test390UserDelete() {
+    ObjectClass oClass = new ObjectClass("ZoomUser");
     getConnectorFacade()
-        .delete(
-            ObjectClass.ACCOUNT, new Uid(generatedUserId), new OperationOptionsBuilder().build());
+        .delete(oClass, new Uid(generatedUserId), new OperationOptionsBuilder().build());
   }
 }

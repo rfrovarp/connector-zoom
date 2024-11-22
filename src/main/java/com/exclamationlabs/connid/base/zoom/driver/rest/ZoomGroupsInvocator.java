@@ -78,19 +78,7 @@ public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGrou
 
   @Override
   public void delete(ZoomDriver zoomDriver, String groupId) throws ConnectorException {
-    try {
-      zoomDriver.executeRequest(
-          new RestRequest.Builder<>(Void.class)
-              .withDelete()
-              .withRequestUri("/groups/" + groupId)
-              .build());
-    } catch (PaidAccountRequiredException paid) {
-      Logger.warn(
-          this,
-          String.format(
-              "Deletion of group id %s not possible without paid Zoom subscription", groupId),
-          paid);
-    }
+    throw new UnsupportedOperationException("Delete not supported for Zoom groups");
   }
 
   @Override

@@ -93,7 +93,7 @@ public class ZoomGroupsInvocator implements DriverInvocator<ZoomDriver, ZoomGrou
                 paid);
       }
     } else {
-      throw new UnsupportedOperationException("Delete not supported for Zoom groups");
+      throw new UnsupportedOperationException("Deletion of Zoom groups is not enabled");
     }
   }
 

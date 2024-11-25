@@ -1,6 +1,7 @@
 # connector-zoom
 
 ## Change Log
++ **5.0.0** - FIN-12678 - Add Entitlement Deletion configuration flag (11/22/2024)
 + **4.2.3** - Updated Object Class names from ACCOUNT to ZoomUser and GROUP to ZoomGroup
 + **4.2.2** - Update Connector-Base Version, GAR Updates, and Update to Java 11 FIN-12386 (9/3/2024)
 + **4.2.1** - Added Email Address Change Support

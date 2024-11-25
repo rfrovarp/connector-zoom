@@ -36,4 +36,10 @@ custom:
         default: 'false'
         display: 'Immediate Logout on Deactivate'
         help: 'If true, a SSO logout via Zoom API will also be executed when a user is deactivated.'
+      entitlementDeletionEnabled:
+          type: boolean
+          order: 3050
+          default: 'false'
+          display: 'Entitlement Deletion Enabled'
+          help: 'Enables the connector''s group deletion capability allowing the automated removal of Zoom groups via the Zoom API. The group removal capability is disabled by default.'
 

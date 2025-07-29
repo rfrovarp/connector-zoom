@@ -402,6 +402,22 @@ The connector schema is drawn from available variables in the Zoom User API and 
    </td>
   </tr>
   <tr>
+   <td>DEPT
+   </td>
+   <td>String
+   </td>
+   <td>The user's department.
+   </td>
+  </tr>
+  <tr>
+   <td>JOB_TITLE
+   </td>
+   <td>String
+   </td>
+   <td>The user's job title.
+   </td>
+  </tr>
+  <tr>
    <td>LANGUAGE
    </td>
    <td>String

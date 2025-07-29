@@ -46,6 +46,8 @@ public class ZoomUsersAdapter extends BaseAdapter<ZoomUser, ZoomConfiguration> {
     result.add(new ConnectorAttribute(FIRST_NAME.name(), STRING));
     result.add(new ConnectorAttribute(LAST_NAME.name(), STRING));
     result.add(new ConnectorAttribute(Name.NAME, EMAIL.name(), STRING, REQUIRED));
+    result.add(new ConnectorAttribute(DEPT.name(), STRING));
+    result.add(new ConnectorAttribute(JOB_TITLE.name(), STRING));
 
     result.add(new ConnectorAttribute(PASSWORD.name(), STRING, NOT_UPDATEABLE));
     result.add(new ConnectorAttribute(LANGUAGE.name(), STRING));
@@ -97,6 +99,9 @@ public class ZoomUsersAdapter extends BaseAdapter<ZoomUser, ZoomConfiguration> {
           AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, EMAIL));
     }
 
+    user.setDept(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, DEPT));
+    user.setJobTitle(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, JOB_TITLE));
+    
     user.setTimezone(
         AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, TIME_ZONE));
 
@@ -199,6 +204,8 @@ public class ZoomUsersAdapter extends BaseAdapter<ZoomUser, ZoomConfiguration> {
     attributes.add(AttributeBuilder.build(TIME_ZONE.name(), user.getTimezone()));
 
     attributes.add(AttributeBuilder.build(TYPE.name(), user.getType()));
+    attributes.add(AttributeBuilder.build(DEPT.name(), user.getDept()));
+    attributes.add(AttributeBuilder.build(JOB_TITLE.name(), user.getJobTitle()));
     attributes.add(AttributeBuilder.build(PHONE_NUMBER.name(), user.getPhoneNumber()));
     attributes.add(AttributeBuilder.build(PHONE_COUNTRY.name(), user.getPhoneCountry()));
     attributes.add(AttributeBuilder.build(CREATED_AT.name(), user.getCreatedAt()));

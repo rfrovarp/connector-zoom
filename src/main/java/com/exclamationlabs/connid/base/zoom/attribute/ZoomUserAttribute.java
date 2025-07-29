@@ -22,6 +22,8 @@ public enum ZoomUserAttribute {
   FIRST_NAME,
   LAST_NAME,
   EMAIL,
+  DEPT,
+  JOB_TITLE,
   PASSWORD,
   LANGUAGE,
   TIME_ZONE,

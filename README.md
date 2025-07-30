@@ -212,6 +212,30 @@ The configuration parameters are specified in the following table. One thing to 
    <td>When this value is true the user will be immediately logged out when a deactivate event occurs. 
    </td>
   </tr>
+  <tr>
+    <td>Ignore Update Error On Disabled User
+    </td>
+    <td>no
+    </td>
+    <td>When this value is <strong>true</strong> the connector won't return errors when trying to update a disabled user. This means that disabled users will remain out of sync, but actions won't cause errors to be returned. When this value is <strong>false</strong> (default), any updates performed on disabled users will result in errors.
+    </td>
+  </tr>
+  <tr>
+    <td>Remove Phone Feature On Disabled User
+    </td>
+    <td>no
+    </td>
+    <td>When this value is <strong>true</strong> the connector will remove the phone feature from disabled users when <strong>ZOOM_PHONE_FEATURE</strong> is set to <strong>false</strong>. This is done by temporarily enabling the user, performing that and any other updates, then disabling the user again. When this value is <strong>false</strong> (default), any attempted changes at changing <strong>ZOOM_PHONE_FEATURE</strong> on a disabled user will result in an error.
+    </td>
+  </tr>
+  <tr>
+    <td>Update Disabled Users
+    </td>
+    <td>no
+    </td>
+    <td>When this value is <strong>true</strong> the connector will update user information on disabled users, including the <strong>ZOOM_PHONE_FEATURE</strong>. This is done by temporarily enabling the user, performing the update, then disabling the user again. When this value is <strong>false</strong> (default), any attempted changes at chaging attributes on a disabled user will result in an error.
+    </td>
+  </tr>
 </table>
 
 

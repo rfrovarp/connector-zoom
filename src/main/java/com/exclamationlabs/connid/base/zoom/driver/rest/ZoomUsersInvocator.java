@@ -112,7 +112,20 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
               .withRequestBody(user)
               .withRequestUri("/users/" + userId)
               .build();
-      RestResponseData<Void> response = driver.executeRequest(req);
+      RestResponseData<Void> response;
+      try {
+        response = driver.executeRequest(req);
+      } catch(UserDisabledException e) {
+        if (driver.getConfiguration().getIgnoreUpdateErrorOnDisabledUser() 
+            || driver.getConfiguration().getUpdateDisabledUsers() 
+            || driver.getConfiguration().getRemovePhoneFeatureOnDisabledUser()) {
+          handleDisabledUser(driver, userId, user);
+          return;
+        } else {
+          // proceed as normal and throw exception
+          throw new ConnectorException(e);
+        }
+      }
 
       if (response.getResponseStatusCode() == 204) {
         ZoomUser current = getOne(driver, userId, null);
@@ -743,5 +756,52 @@ public class ZoomUsersInvocator implements DriverInvocator<ZoomDriver, ZoomUser>
       }
     }
     return statusCode;
+  }
+  
+  /**
+   * Handle update on disabled user if config options are enabled
+   * @param driver driver
+   * @param userId zoom user id
+   * @param user delta user object
+   */
+  private void handleDisabledUser(ZoomDriver driver, String userId, ZoomUser user) {
+    // check config enable action
+    // this will change the phone feature too
+    if (driver.getConfiguration().getUpdateDisabledUsers()) {
+      Logger.info(this, String.format("Updating a disabled user %s",  userId));
+      updateUserStatus(driver, "active", userId);
+      RestRequest req =
+          new RestRequest.Builder<>(Void.class)
+              .withPatch()
+              .withRequestBody(user)
+              .withRequestUri("/users/" + userId)
+              .build();
+      RestResponseData<Void> response = driver.executeRequest(req);
+      updateUserStatus(driver, "inactive", userId);
+      return;
+    }
+    
+    // check to see if the phone feature should be removed.
+    // removal of the phone feature removes numbers and sites, so don't need
+    // do to removal of those too. Will coincidentally update other attributes too
+    if (driver.getConfiguration().getRemovePhoneFeatureOnDisabledUser()
+        && user.getFeature() != null
+        && !user.getFeature().getZoomPhone()) {
+      Logger.info(this, String.format("Removing phone feature from a disabled user %s",  userId));
+      updateUserStatus(driver, "active", userId);
+      RestRequest req =
+          new RestRequest.Builder<>(Void.class)
+              .withPatch()
+              .withRequestBody(user)
+              .withRequestUri("/users/" + userId)
+              .build();
+      RestResponseData<Void> response = driver.executeRequest(req);
+      updateUserStatus(driver, "inactive", userId);
+      return;
+    }
+     
+    // check config for ignore action
+    // last possible option here, so no op
+    Logger.info(this, String.format("Ignoring a disabled user %s",  userId));
   }
 }

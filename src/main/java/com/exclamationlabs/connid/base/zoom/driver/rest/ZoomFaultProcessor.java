@@ -92,7 +92,8 @@ public class ZoomFaultProcessor implements RestFaultProcessor {
     switch (faultData.getCode()) {
       case PAID_SUBSCRIPTION_REQUIRED:
         throw new PaidAccountRequiredException(faultData.getMessage());
-
+      case USER_DISABLE:
+        throw new UserDisabledException(faultData.getMessage());
       case USER_NOT_FOUND:
       case GROUP_NOT_FOUND:
         return false;
@@ -116,20 +117,4 @@ public class ZoomFaultProcessor implements RestFaultProcessor {
     return true;
   }
 
-  private Boolean checkRecognizedFaultMessages(ErrorResponse faultData) {
-    if (faultData != null
-        && faultData.getMessage() != null
-        && (!faultData.getMessage().isEmpty())) {
-      String message = faultData.getMessage();
-      if (message.contains("User does not exist")) {
-        Logger.info(this, message);
-        return true;
-      } else {
-        Logger.error(this, message);
-        throw new ConnectorException(
-            "Unhandled Exception Received from Zoom.  Message: " + faultData.getMessage());
-      }
-    }
-    return false;
-  }
 }

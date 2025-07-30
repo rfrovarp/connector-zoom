@@ -42,4 +42,22 @@ custom:
           default: 'false'
           display: 'Entitlement Deletion Enabled'
           help: 'Enables the connector''s group deletion capability allowing the automated removal of Zoom groups via the Zoom API. The group removal capability is disabled by default.'
+      ignoreUpdateErrorOnDisabledUser:
+        type: boolean
+        order: 3060
+        default: 'false'
+        display: 'Ignore Error on Disabled User'
+        help: 'Ignores update errors on disabled users, as they can''t be updated. Phone feature will still cause errors to be thrown.'
+      removePhoneFeatureOnDisabledUser:
+        type: boolean
+        order: 3070
+        default: 'false'
+        display: 'Remove Phone Feature on Disabled User'
+        help: 'Removes the Phone feature on disabled users by temporarily reenabling them. Other updates may fire at the time.'
+      updateDisabledUsers:
+        type: boolean
+        order: 3080
+        default: 'false'
+        display: 'Update Disabled Users'
+        help: 'Updates information on disabled users by temporarily reenabling them.'
 
